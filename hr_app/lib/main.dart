@@ -1,28 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  ///runApp(ChangeNotifierProvider(create: (_) => AppUser(), child: App()));
   runApp(MyApp());
+
 }
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'HI-ROBOT Control',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        // Define the default brightness and colors.
+        brightness: Brightness.light,
+        primaryColor: Colors.green[900],
+        backgroundColor: Colors.greenAccent[200],
+        // Define the default font family.
+        fontFamily: 'Georgia',
+
+        // Define the default `TextTheme`. Use this to specify the default
+        // text styling for headlines, titles, bodies of text, and more.
+        textTheme: const TextTheme(
+          headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.green),
+          headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic, color: Colors.green),
+          bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+        ),
+        primarySwatch: Colors.green,
+        scaffoldBackgroundColor: Colors.green.shade200,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'HR - Main Menu'),
     );
   }
 }
@@ -71,7 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(widget.title,
+          style: TextStyle(color: Colors.green.shade900),
+        ),
+
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -91,23 +109,100 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            ///title text
+            Container(
+              height: MediaQuery.of(context).size.height * 0.12,
+              width: MediaQuery.of(context).size.width * 0.8,
+              alignment: Alignment.center,
+              child: Text("Hello, User!",
+                style: TextStyle(fontSize: 34),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.15,
             ),
+            ///live video button
+            Container(
+              height: MediaQuery.of(context).size.height * 0.08,
+              width: MediaQuery.of(context).size.width * 0.8,
+
+              child: ElevatedButton(onPressed: () {
+                showAboutDialog(context: context, applicationVersion: '1.0.0');
+              },
+                child: Text(
+                    'Live Video!',
+                  style: TextStyle(fontSize: 30),
+                  ),
+                style: ButtonStyle(
+
+                ),
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.04,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.06,
+              width: MediaQuery.of(context).size.width * 0.6,
+
+              child: ElevatedButton(onPressed: () {
+                int i=0;
+              },
+                child: Text(
+                  'control',
+                  style: TextStyle(fontSize: 24),
+                ),
+                style: ButtonStyle(
+
+                ),
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.03,
+            ),
+            ///saved data button
+            Container(
+              height: MediaQuery.of(context).size.height * 0.06,
+              width: MediaQuery.of(context).size.width * 0.6,
+
+              child: ElevatedButton(onPressed: () {
+                int i=0;
+              },
+                child: Text(
+                  'Saved Footage',
+                  style: TextStyle(fontSize: 24),
+                ),
+                style: ButtonStyle(
+
+                ),
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.03,
+            ),
+            ///settings button
+            Container(
+              height: MediaQuery.of(context).size.height * 0.06,
+              width: MediaQuery.of(context).size.width * 0.6,
+
+              child: ElevatedButton(onPressed: () {
+                int i=0;
+              },
+                child: Text(
+                  'Settings',
+                  style: TextStyle(fontSize: 24),
+                ),
+                style: ButtonStyle(
+
+                ),
+              ),
+            ),
+
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
