@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'live_feed_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -129,7 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.8,
 
               child: ElevatedButton(onPressed: () {
-                showAboutDialog(context: context, applicationVersion: '1.0.0');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            LiveFeedScreen())
+                );
               },
                 child: Text(
                     'Live Video!',
@@ -148,10 +154,10 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.6,
 
               child: ElevatedButton(onPressed: () {
-                int i=0;
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
               },
                 child: Text(
-                  'control',
+                  'Control',
                   style: TextStyle(fontSize: 24),
                 ),
                 style: ButtonStyle(
@@ -168,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.6,
 
               child: ElevatedButton(onPressed: () {
-                int i=0;
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
               },
                 child: Text(
                   'Saved Footage',
@@ -188,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.6,
 
               child: ElevatedButton(onPressed: () {
-                int i=0;
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
               },
                 child: Text(
                   'Settings',
