@@ -1,0 +1,5 @@
+firebase storage bucket code:
+hi-robot-firebase.appspot.com
+
+web-api-key:
+AIzaSyDRH9-Sf2FocGzuXt_8_nrcY4Gr0_jb440
