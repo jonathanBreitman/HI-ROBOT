@@ -1,15 +1,18 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'live_feed_page.dart';
+import 'utilities/SignInPage.dart';
+import 'utilities/Authentication.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
-  ///runApp(ChangeNotifierProvider(create: (_) => AppUser(), child: App()));
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => AppUser(), child: MyApp()));
+  //runApp(MyApp());
 
 }
 
@@ -44,7 +47,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title: ""}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -63,7 +66,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
+  late DatabaseReference _dbref;
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -76,6 +79,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    _dbref = FirebaseDatabase.instance.ref('dir_commands');
+  }
+
+  @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -83,6 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
+    final _appUser = Provider.of<AppUser>(context);
+
+    bool isAnyoneLoggedIn = _appUser.status == AuthStatus.Authenticated;
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -90,7 +103,26 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title,
           style: TextStyle(color: Colors.green.shade900),
         ),
-
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.account_circle,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // GO TO SIGN IN/UP PAGE
+              Navigator.pushAndRemoveUntil<dynamic>(
+                context,
+                MaterialPageRoute<dynamic>(
+                  builder: (BuildContext context) =>
+                      SignInPageWidget(),
+                ),
+                    (route) =>
+                false, //if you want to disable back feature set to false
+              );
+            },
+          )
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -134,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            LiveFeedScreen())
+                            LiveFeedScreen(db_ref: this._dbref))
                 );
               },
                 child: Text(
