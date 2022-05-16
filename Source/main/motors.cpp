@@ -23,16 +23,15 @@ void setupMotorPins(){
 
 void readMotorsDB_Commends() {
   char param_name[150] = "wirelessCar/";
-  strcat(param_name, "speed");
-  readRealTimeDB_Value<int>(param_name, &vSpeed);
-  strcat(param_name, "forward");
-  readRealTimeDB_Value<bool>(param_name, &forward);
-  strcat(param_name, "backward");
-  readRealTimeDB_Value<bool>(param_name, &backward);
-  strcat(param_name, "left");
-  readRealTimeDB_Value<bool>(param_name, &left);
-  strcat(param_name, "right");
-  readRealTimeDB_Value<bool>(param_name, &right);  
+  readRealTimeDB_Value<int>(strcat(param_name, "speed"), &vSpeed);
+  param_name = "wirelessCar/";
+  readRealTimeDB_Value<bool>(strcat(param_name, "forward"), &forward);
+  param_name = "wirelessCar/";
+  readRealTimeDB_Value<bool>(strcat(param_name, "backward"), &backward);
+  param_name = "wirelessCar/";
+  readRealTimeDB_Value<bool>(strcat(param_name, "left"), &left);
+  param_name = "wirelessCar/";
+  readRealTimeDB_Value<bool>(strcat(param_name, "right"), &right);  
 }
 
 
@@ -67,5 +66,5 @@ void setMotorsValueByCommend() {
     digitalWrite(motorA2, 0);
     digitalWrite(motorB1, 0);
     digitalWrite(motorB2, 0);
-  }  
+  } //TODO: add multi-directional movment
 }

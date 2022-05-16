@@ -1,5 +1,5 @@
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef MY_UTILITY_H
+#define MY_UTILITY_H
 
 #include <Arduino.h>
 //------------------------------WiFi---------------------------

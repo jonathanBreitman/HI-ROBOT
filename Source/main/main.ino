@@ -1,6 +1,4 @@
-#include <Arduino.h>
 #include "motors.h"
-#include "utility.h"
 
 #define MANUAL 0
 #define AUTONOMOUS 1
