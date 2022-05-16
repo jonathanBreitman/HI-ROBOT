@@ -8,10 +8,10 @@
 #include "addons/RTDBHelper.h"
 
 // Insert Firebase project API Key
-#define API_KEY "AIzaSyDRH9-Sf2FocGzuXt_8_nrcY4Gr0_jb440"
+#define API_KEY "AIzaSyAWjSDHTgJVYfuhwAVy9StRqDm_eqc0lwU"
 
 // Insert RTDB URLefine the RTDB URL */
-#define DATABASE_URL "https://hi-robot-firebase-default-rtdb.europe-west1.firebasedatabase.app/" 
+#define DATABASE_URL "https://hi-robot-c64d7-default-rtdb.firebaseio.com/" 
 
 #define WIFI_SSID "POCO"
 #define WIFI_PASSWORD "1234567890"
