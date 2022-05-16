@@ -36,3 +36,35 @@ void FirebaseSetup() {
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);  
 }
+
+void readRealTimeDB_Value_Int(char *param_name, int *output) {
+      char start_str[150] = "wirelessCar/";
+      if (Firebase.RTDB.get(&fbdo, strcat(start_str, param_name))) {
+        //Serial.println("READ: " + param_name + " succesfully");
+        //Serial.println("PATH: " + fbdo.dataPath());
+        //Serial.println("TYPE: " + fbdo.dataType());
+        //Serial.print("VALUE : ");
+        //Serial.println(fbdo.to<int>());
+        *output = fbdo.to<int>(); 
+      }
+      else {
+        Serial.println("FAILED reading");
+        Serial.println("REASON: " + fbdo.errorReason());
+      }  
+}
+
+void readRealTimeDB_Value_Bool(char *param_name, bool *output) {
+  char start_str[150] = "wirelessCar/";
+      if (Firebase.RTDB.getBool(&fbdo, strcat(start_str, param_name))) {
+        //Serial.println("READ: " + param_name + " succesfully");
+        //Serial.println("PATH: " + fbdo.dataPath());
+        //Serial.println("TYPE: " + fbdo.dataType());
+        //Serial.print("VALUE : ");
+        //Serial.println(fbdo.to<int>());
+        *output = fbdo.to<bool>(); 
+      }
+      else {
+        Serial.println("FAILED reading");
+        Serial.println("REASON: " + fbdo.errorReason());
+      }  
+}

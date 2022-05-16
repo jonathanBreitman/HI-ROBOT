@@ -20,7 +20,7 @@ void setup() {
 
 void loop() {
   if (Firebase.ready() && signupOK) {
-    readRealTimeDB_Value<int>("wirelessCar/state", &robotMode); //read robot  state
+    readRealTimeDB_Value_Int("state", &robotMode); //read robot  state
     if (robotMode == MANUAL) {
       readMotorsDB_Commends();
       setMotorsValueByCommend();

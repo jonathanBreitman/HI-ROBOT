@@ -22,16 +22,16 @@ void setupMotorPins(){
 
 
 void readMotorsDB_Commends() {
-  char param_name[150] = "wirelessCar/";
-  readRealTimeDB_Value<int>(strcat(param_name, "speed"), &vSpeed);
-  param_name = "wirelessCar/";
-  readRealTimeDB_Value<bool>(strcat(param_name, "forward"), &forward);
-  param_name = "wirelessCar/";
-  readRealTimeDB_Value<bool>(strcat(param_name, "backward"), &backward);
-  param_name = "wirelessCar/";
-  readRealTimeDB_Value<bool>(strcat(param_name, "left"), &left);
-  param_name = "wirelessCar/";
-  readRealTimeDB_Value<bool>(strcat(param_name, "right"), &right);  
+  
+  readRealTimeDB_Value_Int("speed", &vSpeed);
+  
+  readRealTimeDB_Value_Bool("forward", &forward);
+  
+  readRealTimeDB_Value_Bool("backward", &backward);
+  
+  readRealTimeDB_Value_Bool("left", &left);
+  
+  readRealTimeDB_Value_Bool("right", &right);  
 }
 
 

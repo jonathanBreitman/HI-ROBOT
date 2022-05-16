@@ -28,21 +28,10 @@ FirebaseConfig config;
 bool signupOK = false;
 
 void FirebaseSetup();
-template <typename T>
-void readRealTimeDB_Value(char *param_name, T *output) {
-      if (Firebase.RTDB.get(&fbdo, param_name)) {
-        //Serial.println("READ: " + param_name + " succesfully");
-        //Serial.println("PATH: " + fbdo.dataPath());
-        //Serial.println("TYPE: " + fbdo.dataType());
-        //Serial.print("VALUE : ");
-        //Serial.println(fbdo.to<int>());
-        *output = fbdo.to<T>(); 
-      }
-      else {
-        Serial.println("FAILED reading");
-        Serial.println("REASON: " + fbdo.errorReason());
-      }  
-}
+
+void readRealTimeDB_Value_Int(char *param_name, int *output);
+
+void readRealTimeDB_Value_Bool(char *param_name, bool *output);
 //-------------------------------------------------------------
 
 #endif
