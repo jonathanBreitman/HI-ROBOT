@@ -86,13 +86,14 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                           //print("${degrees.toStringAsFixed(2)},${distance.toStringAsFixed(2)}");
                           JoyStickPower pow = getJSPow(distance);
                           JoyStickDirection dir = getJSDir(degrees);
+
                           if (pow != _joystickPower || dir != _joystickDir) {
                             changeJoystickState(dir, pow);
                           }
-                          this._dbRef.child(await Provider.of<AppUser>(
+                          this._dbRef/*.child(await Provider.of<AppUser>(
                                 context,
                                 listen: false)
-                                .user!.uid).update({"power": (pow == JoyStickPower.NONE)? 0 : (pow == JoyStickPower.HALF_POWER)? 1 : 2,
+                                .user!.uid)*/.update({"speed": (distance*255).round(),
                               "forward": (dir == JoyStickDirection.UP_LEFT ||
                                 dir == JoyStickDirection.UP_RIGHT ||
                                 dir == JoyStickDirection.UP

@@ -250,7 +250,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                       context,
                                       MaterialPageRoute<dynamic>(
                                         builder: (BuildContext context) =>
-                                            MyHomePage(title: "HI ROBOT"),
+                                            MyHomePage(title: "HR - Main Menu"),
                                       ),
                                           (route) =>
                                       false, //if you want to disable back feature set to false

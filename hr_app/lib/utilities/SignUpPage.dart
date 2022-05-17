@@ -327,7 +327,7 @@ class _SignupPageState extends State<SignupPage> {
                                         context,
                                         MaterialPageRoute<dynamic>(
                                           builder: (BuildContext context) =>
-                                              MyHomePage(title: "HI ROBOT"),
+                                              MyHomePage(title: "HR - Main Menu"),
                                         ),
                                             (route) =>
                                         false, //if you want to disable back feature set to false

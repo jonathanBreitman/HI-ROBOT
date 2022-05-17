@@ -1,6 +1,8 @@
 import 'package:hr_app/my_flutter_app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_app/main.dart';
+import 'package:intl/intl.dart';
+
 
 enum JoyStickDirection{
   NONE, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT
@@ -44,6 +46,10 @@ JoyStickDirection getJSDir(double degrees){
     }
   }
   return dir;
+}
+
+String getCleanDateStr(DateTime date){
+  return DateFormat.yMMMMd('en_US').format(date) + ", " + DateFormat.Hms().format(date);
 }
 
 JoyStickPower getJSPow(double distance){

@@ -91,9 +91,11 @@ class AppUser with ChangeNotifier {
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
 
-    FirebaseDatabase.instance.ref('dir_commands/' + _user!.uid).set({'power': 0, 'forward': false, 'back': false, 'left': false, 'right': false});
+    FirebaseDatabase.instance.ref('wirelessCar').set({'speed': 0, 'forward': false, 'back': false, 'left': false, 'right': false});
+    //FirebaseDatabase.instance.ref('dir_commands/' + _user!.uid).set({'power': 0, 'forward': false, 'back': false, 'left': false, 'right': false});
     _status = AuthStatus.Authenticated;
     this.name = name;
+    await getUsername();
     notifyListeners();
   }
 
@@ -110,6 +112,7 @@ class AppUser with ChangeNotifier {
           .get();
 
       _status = AuthStatus.Authenticated;
+      await getUsername();
       notifyListeners();
       return true;
     } catch (e) {
@@ -161,7 +164,8 @@ class AppUser with ChangeNotifier {
           .doc(_auth.currentUser!.uid)
           .get()
           .catchError((error) => {print(error.toString())});
-      return await dbUser.data()!['name'];
+      name = await dbUser.data()!['name'];
+      return name;
     }
   }
 

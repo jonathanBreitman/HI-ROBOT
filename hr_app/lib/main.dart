@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hr_app/saved_footage_page.dart';
 import 'package:provider/provider.dart';
 import 'live_feed_page.dart';
 import 'utilities/SignInPage.dart';
@@ -81,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState(){
     super.initState();
-    _dbref = FirebaseDatabase.instance.ref('dir_commands');
+    _dbref = FirebaseDatabase.instance.ref('wirelessCar');//FirebaseDatabase.instance.ref('dir_commands');
   }
 
   @override
@@ -95,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final _appUser = Provider.of<AppUser>(context);
 
-    bool isAnyoneLoggedIn = _appUser.status == AuthStatus.Authenticated;
+    //bool isAnyoneLoggedIn = _appUser.status == AuthStatus.Authenticated;
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -105,21 +106,26 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.account_circle,
+            icon: Icon( !_appUser.isAuthenticated?
+              Icons.account_circle : Icons.logout,
               color: Colors.white,
             ),
-            onPressed: () {
-              // GO TO SIGN IN/UP PAGE
-              Navigator.pushAndRemoveUntil<dynamic>(
-                context,
-                MaterialPageRoute<dynamic>(
-                  builder: (BuildContext context) =>
-                      SignInPageWidget(),
-                ),
-                    (route) =>
-                false, //if you want to disable back feature set to false
-              );
+            onPressed: () async {
+              if (!_appUser.isAuthenticated) {
+                // GO TO SIGN IN/UP PAGE
+                Navigator.pushAndRemoveUntil<dynamic>(
+                  context,
+                  MaterialPageRoute<dynamic>(
+                    builder: (BuildContext context) =>
+                        SignInPageWidget(),
+                  ),
+                      (route) =>
+                  false, //if you want to disable back feature set to false
+                );
+              }
+              else{
+                await _appUser.signOut();
+              }
             },
           )
         ],
@@ -149,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: MediaQuery.of(context).size.height * 0.12,
               width: MediaQuery.of(context).size.width * 0.8,
               alignment: Alignment.center,
-              child: Text("Hello, User!",
+              child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.name : "Welcome!",
                 style: TextStyle(fontSize: 34),
               ),
             ),
@@ -162,12 +168,25 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.8,
 
               child: ElevatedButton(onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            LiveFeedScreen(db_ref: this._dbref))
-                );
+                if(!_appUser.isAuthenticated){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                }
+                else {
+                  if (_appUser.user!.uid == '3vXZ4BiK8SWYyTK3IbrJxJGo2nt1') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                LiveFeedScreen(db_ref: this._dbref))
+                    );
+                  }
+                  else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(_appUser.name +
+                            ' has no connected car...'),
+                          duration: Duration(seconds: 1),));
+                  }
+                }
               },
                 child: Text(
                     'Live Video!',
@@ -186,7 +205,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.6,
 
               child: ElevatedButton(onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
+                if(!_appUser.isAuthenticated){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                }
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('soon...'), duration: Duration(seconds: 1),));
+                }
               },
                 child: Text(
                   'Control',
@@ -206,7 +231,17 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.6,
 
               child: ElevatedButton(onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
+                if(!_appUser.isAuthenticated){
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                }
+                else {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SavedFootagePage())
+                  );
+                }
               },
                 child: Text(
                   'Saved Footage',
@@ -226,7 +261,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: MediaQuery.of(context).size.width * 0.6,
 
               child: ElevatedButton(onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
+                if(!_appUser.isAuthenticated){
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                }
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
+                }
               },
                 child: Text(
                   'Settings',
