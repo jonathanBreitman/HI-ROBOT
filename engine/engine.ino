@@ -4,8 +4,8 @@
 *********/
 
 // Motor A
-int motor1Pin1 = 14; 
-int motor1Pin2 = 15; 
+int motor1Pin1 = 32; 
+int motor1Pin2 = 33; 
 
 void setup() {
   Serial.begin(115200);

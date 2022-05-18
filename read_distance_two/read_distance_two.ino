@@ -20,6 +20,9 @@ SFEVL53L1X distanceSensor2(I2Ctwo);
 
 void setup(void)
 {
+  Serial.begin(115200);
+  Serial.println("Two VL53L1X Qwiic Test");
+
   int my_sda = SDA_1;
   int my_scl = SCL_1;
   uint32_t my_freq = 100000;
@@ -28,9 +31,7 @@ void setup(void)
   my_scl = SCL_2;
   I2Ctwo.begin(my_sda, my_scl, my_freq);
 
-  Serial.begin(115200);
-  Serial.println("Two VL53L1X Qwiic Test");
-
+  
   if (distanceSensor1.begin() != 0) //Begin returns 0 on a good init
   {
     Serial.println("Sensor 1 failed to begin. Please check wiring. Freezing...");
@@ -38,7 +39,7 @@ void setup(void)
       ;
   }
 
-  Serial.println("Sensor 2 online!");
+  Serial.println("Sensor 1 online!");
   if (distanceSensor2.begin() != 0) //Begin returns 0 on a good init
   {
     Serial.println("Sensor 2 failed to begin. Please check wiring. Freezing...");
@@ -46,6 +47,8 @@ void setup(void)
       ;
   }
   Serial.println("Sensor 2 online!");
+  pinMode(18, OUTPUT);
+  pinMode(19, OUTPUT);
 }
 
 void loop(void)
@@ -75,5 +78,7 @@ void loop(void)
   Serial.print(distance2);
   
   Serial.println();
+  digitalWrite(18, LOW);
+  digitalWrite(19, HIGH); 
   delay(2000);
 }

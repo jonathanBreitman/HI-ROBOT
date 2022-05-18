@@ -41,23 +41,33 @@ void setupDistanceSnsors() {
 
 
 // Returns the distance from the sensor in mm
-int readDistance(int sensor_number) {
-  SFEVL53L1X distanceSensor;
-  if(sensor_number == 1) 
-    distanceSensor = distanceSensor1;
-  else if (sensor_number == 2)
-    distanceSensor = distanceSensor2;
-    
-  distanceSensor.startRanging(); //Write configuration bytes to initiate measurement
-  while (!distanceSensor.checkForDataReady())
+int readDistanceFront() {
+  distanceSensor1.startRanging(); //Write configuration bytes to initiate measurement
+  while (!distanceSensor1.checkForDataReady())
     delay(1);
     
-  int distance = distanceSensor.getDistance(); //Get the result of the measurement from the sensor
-  distanceSensor.clearInterrupt();
-  distanceSensor.stopRanging();
+  int distance = distanceSensor1.getDistance(); //Get the result of the measurement from the sensor
+  distanceSensor1.clearInterrupt();
+  distanceSensor1.stopRanging();
 
-  Serial.print("Distance of sensor");
-  Serial.print(sensor_number);
+  Serial.print("Distance of sensor facing forward");
+  Serial.print("(mm): ");
+  Serial.println(distance);
+
+  return distance;
+}
+
+int readDistanceRight() {
+    
+  distanceSensor2.startRanging(); //Write configuration bytes to initiate measurement
+  while (!distanceSensor2.checkForDataReady())
+    delay(1);
+    
+  int distance = distanceSensor2.getDistance(); //Get the result of the measurement from the sensor
+  distanceSensor2.clearInterrupt();
+  distanceSensor2.stopRanging();
+
+  Serial.print("Distance of sensor facing right");
   Serial.print("(mm): ");
   Serial.println(distance);
 

@@ -1,10 +1,10 @@
 #include "motors.h"
 
 //Motor L298 PINS
-const int motorA1  = 33;  // IN3 Input of L298N
-const int motorA2  = 32;  // IN1 Input of L298N
-const int motorB1  = 25;  // IN2 Input of L298N
-const int motorB2  = 26;  // IN4 Input of L298N
+const int motorA1  = 32;  // IN3 Input of L298N
+const int motorA2  = 33;  // IN1 Input of L298N
+const int motorB1  = 18;  // IN2 Input of L298N
+const int motorB2  = 19;  // IN4 Input of L298N
 
 int vSpeed = 255;   // Standard Speed can take a value between 0-255
 bool backward = false;

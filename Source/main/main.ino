@@ -16,9 +16,6 @@
 // Path for file in Firebase
 #define FILE_PATH "wirelessCar/" 
 
-#define SIDE_WALL_SENSOR 0
-#define FRONT_WALL_SENSOR 1
-
 #define MANUAL 0
 #define AUTONOMOUS 1
 
@@ -90,12 +87,14 @@ void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
 //-----------------------------------------------------------------------------
 //------------------------------Motors-----------------------------------------
 void readMotorsDB_Commands() {
+
+  readRealTimeDB_ValueInt("state", &robotMode);
   
   readRealTimeDB_ValueInt("speed", &vSpeed);
   
   readRealTimeDB_ValueBool("forward", &forward);
   
-  readRealTimeDB_ValueBool("backward", &backward);
+  readRealTimeDB_ValueBool("back", &backward);
   
   readRealTimeDB_ValueBool("left", &left);
   
@@ -120,16 +119,19 @@ void setup() {
 }
 
 void loop() {
+  delay(2000);
   if (Firebase.ready() && signupOK) {
-    readRealTimeDB_ValueInt("state", &robotMode); //read robot  state
+    Serial.println("firebase is ready");
+    readMotorsDB_Commands();
+    Serial.println("read robot state");
     if (robotMode == MANUAL) {
-      readMotorsDB_Commands();
       setMotorsValueByCommand();
     }
-    else if (robotMode == AUTONOMOUS) {  
+    else if (robotMode == AUTONOMOUS) {
+      Serial.println("entering autonomous movement");  
       //sample distance sensors
-      int distance1 = readDistance(SIDE_WALL_SENSOR); //distance of sensor 1
-      int distance2 = readDistance(FRONT_WALL_SENSOR); //distance of sensor 2
+      int distance1 = readDistanceRight(); //distance of sensor 1
+      int distance2 = readDistanceFront(); //distance of sensor 2
 
       //initinalize motors accordingly to the sensors (correction of movement according to the data)
       setMororsValueBySensors(distance1, distance2);

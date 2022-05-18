@@ -13,6 +13,7 @@
 
 
 void setupDistanceSnsors();
-int readDistance(int sensor_number);  
+int readDistanceFront();  
+int readDistanceRight();  
 
 #endif

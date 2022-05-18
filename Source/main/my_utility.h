@@ -6,8 +6,8 @@
 
 //------------------------------WiFi---------------------------
 // Network Credentials
-#define WIFI_SSID "POCO"
-#define WIFI_PASSWORD "1234567890"
+#define WIFI_SSID "IOT"
+#define WIFI_PASSWORD "dreamy128"
 
 //-------------------------------------------------------------
 
