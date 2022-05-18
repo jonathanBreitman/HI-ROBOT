@@ -16,6 +16,12 @@
 #define WIFI_SSID "POCO"
 #define WIFI_PASSWORD "1234567890"
 
+//movment kind
+#define AUTONOMOUS 1
+#define MANUAL 0
+
+int movment_type = 0;
+
 //Define Firebase Data object
 FirebaseData fbdo;
 
@@ -96,6 +102,21 @@ void readAndSetSpeed(){
       }  
 }
 
+void read_movment_state(){
+  if (Firebase.RTDB.get(&fbdo, "wirelessCar/state")){
+//        Serial.println("READ speed SUCCESS");
+//        Serial.println("PATH: " + fbdo.dataPath());
+//        Serial.println("TYPE: " + fbdo.dataType());
+//        Serial.print("VALUE : ");
+//        Serial.println(fbdo.to<int>());
+        movment_type = fbdo.to<int>(); 
+      }
+      else {
+        Serial.println("FAILED reading");
+        Serial.println("REASON: " + fbdo.errorReason());
+      }  
+}
+
 void readAndSetDirection(char *param_name, bool *output){
       char dst[150] = "wirelessCar/";
       if (Firebase.RTDB.getBool(&fbdo, strcat(dst, param_name))){
@@ -112,8 +133,8 @@ void readAndSetDirection(char *param_name, bool *output){
       }  
 }
 
-void loop() {
-    if (Firebase.ready() && signupOK){
+void manual_movment(){
+  if (Firebase.ready() && signupOK){
       readAndSetSpeed();
       readAndSetDirection("go", &go);
       readAndSetDirection("back", &back);
@@ -150,6 +171,15 @@ void loop() {
         digitalWrite(motorB1, 0);
         digitalWrite(motorB2, 0);
       }
+  }
+}
+
+void loop() {
+  read_movment_state();
+  if( movment_type == MANUAL){
+    manual_movment();
+  } else {
+    //algorithm with sensors
   }
   delay(1000);
 }

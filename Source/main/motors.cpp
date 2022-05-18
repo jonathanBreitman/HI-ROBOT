@@ -53,3 +53,43 @@ void setMotorsValueByCommand() {
     digitalWrite(motorB2, 0);
   } //TODO: add multi-directional movement
 }
+
+void setMororsValueBySensors(int distance_right, int distance_front){
+  if (distance_front < MIN_DISTANCE_FRONT){//we are close to a corner, turn left
+    Serial.println("Go Left");
+    digitalWrite(motorA1, 0);
+    digitalWrite(motorA2, vSpeed);
+    digitalWrite(motorB1, vSpeed);
+    digitalWrite(motorB2, 0);
+    delay(CORNER_DELAY);
+    return;
+  }
+
+  if (distance_right > MAX_DISTANCE_RIGHT){//we are far from the wall, change the direction right a little bit
+    Serial.println("Go Right");
+    digitalWrite(motorA1, vSpeed);
+    digitalWrite(motorA2, 0);
+    digitalWrite(motorB1, 0);
+    digitalWrite(motorB2, vSpeed);
+    delay(RIGHT_CORRECTION_DELAY);
+    return;
+  }
+
+  if (distance_right < MIN_DISTANCE_RIGHT){//we are too close to the wall, change the direction left a little bit
+    Serial.println("Go Left");
+    digitalWrite(motorA1, 0);
+    digitalWrite(motorA2, vSpeed);
+    digitalWrite(motorB1, vSpeed);
+    digitalWrite(motorB2, 0);
+    delay(RIGHT_CORRECTION_DELAY);
+    return;
+  }
+
+  //if we got to this point, we are not in a corner and the robot is in an acceptable distance from the right wall, move forward
+  Serial.println("Go Forward");
+  digitalWrite(motorA1, vSpeed);
+  digitalWrite(motorA2, 0);
+  digitalWrite(motorB1, vSpeed);
+  digitalWrite(motorB2, 0);
+  delay(MOVE_FORWARD_DELAY);
+}

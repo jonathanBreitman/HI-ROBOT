@@ -130,14 +130,13 @@ void loop() {
       //sample distance sensors
       int distance1 = readDistance(SIDE_WALL_SENSOR); //distance of sensor 1
       int distance2 = readDistance(FRONT_WALL_SENSOR); //distance of sensor 2
-      
+
       //initinalize motors accordingly to the sensors (correction of movement according to the data)
-      
-      delay(150); //The autonomus correction extra delay     
+      setMororsValueBySensors(distance1, distance2);
     }
   }
   else {
     Serial.println("Error: Firebase connection error");
   }
-  delay(150); //The manual sample delay     
+  delay(150); //The state sample delay     
 }
