@@ -12,8 +12,7 @@ bool right = false;
 bool left = false;
 bool forward = false;
 
-
-void setupMotorPins(){
+void setupMotorPins() {
   pinMode(motorA1, OUTPUT);
   pinMode(motorA2, OUTPUT);
   pinMode(motorB1, OUTPUT);
@@ -21,21 +20,7 @@ void setupMotorPins(){
 }
 
 
-void readMotorsDB_Commends() {
-  
-  readRealTimeDB_Value_Int("speed", &vSpeed);
-  
-  readRealTimeDB_Value_Bool("forward", &forward);
-  
-  readRealTimeDB_Value_Bool("backward", &backward);
-  
-  readRealTimeDB_Value_Bool("left", &left);
-  
-  readRealTimeDB_Value_Bool("right", &right);  
-}
-
-
-void setMotorsValueByCommend() {
+void setMotorsValueByCommand() {
   if (forward && !left && !right){
     Serial.println("Go Forward");
     digitalWrite(motorA1, vSpeed);
@@ -66,5 +51,5 @@ void setMotorsValueByCommend() {
     digitalWrite(motorA2, 0);
     digitalWrite(motorB1, 0);
     digitalWrite(motorB2, 0);
-  } //TODO: add multi-directional movment
+  } //TODO: add multi-directional movement
 }
