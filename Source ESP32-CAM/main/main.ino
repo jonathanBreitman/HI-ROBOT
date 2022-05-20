@@ -15,6 +15,8 @@
 // RTDB URLefine the RTDB URL */
 #define DATABASE_URL "https://hi-robot-c64d7-default-rtdb.firebaseio.com/" 
 
+#define FILE_PATH "wirelessCar/"
+
 // Firebase Data objects
 FirebaseData fbdo;
 FirebaseAuth auth;
@@ -59,18 +61,60 @@ void FirebaseSetup_v2() {
   Firebase.begin(&configF, &auth);
   Firebase.reconnectWiFi(true);
 }
+
+void readRealTimeDB_ValueInt(const char *param_name, int *output) {
+      char start_str[150] = FILE_PATH;
+      if (Firebase.RTDB.get(&fbdo, strcat(start_str, param_name))) {
+        //Serial.println("READ: " + param_name + " succesfully");
+        //Serial.println("PATH: " + fbdo.dataPath());
+        //Serial.println("TYPE: " + fbdo.dataType());
+        //Serial.print("VALUE : ");
+        //Serial.println(fbdo.to<int>());
+        *output = fbdo.to<int>(); 
+      }
+      else {
+        Serial.println("FAILED reading");
+        Serial.println("REASON: " + fbdo.errorReason());
+      }  
+}
+
+void updateRealTimeDB_ValueInt(const char *param_name, int value) {
+  if (Firebase.RTDB.setInt(&fbdo, param_name, value)) {
+    Serial.println("PASSED");
+    Serial.println("PATH: " + fbdo.dataPath());
+    Serial.println("TYPE: " + fbdo.dataType());
+  }
+  else {
+    Serial.println("FAILED");
+    Serial.println("REASON: " + fbdo.errorReason());
+  }
+}
 //-----------------------------------------------------------------------------
 //-------------------------------CAM-Upload-Photos-----------------------------
 void capturePhotoAnUpload() {
+  int photo_number;
+  readRealTimeDB_ValueInt(PHOTO_NUMBER, &photo_number);
+  char photo_name[100] = {0};
+  strcat(photo_name, FILE_PHOTO);
+  strcat(photo_name, "/photo");
+  char sphoto_number[15];
+  itoa(photo_number, sphoto_number, 10);
+  strcat(photo_name, sphoto_number);
+  strcat(photo_name, ".jpg");
+  
+  //update photo_number in real-time database FILE_PHOTO
+  photo_number++;
+  updateRealTimeDB_ValueInt(PHOTO_NUMBER, photo_number);
+
   capturePhotoSaveSpiffs();
   Serial.print("Uploading picture... ");
   //MIME type should be valid to avoid the download problem.
   //The file systems for flash and SD/SDMMC can be changed in FirebaseFS.h.
   if (Firebase.Storage.upload(&fbdo, 
       STORAGE_BUCKET_ID /* Firebase Storage bucket id */, 
-      FILE_PHOTO /* path to local file */, 
+      "wirelessCar/image.jpg" /* path to local file */, 
       mem_storage_type_flash /* memory storage type, mem_storage_type_flash and mem_storage_type_sd */, 
-      FILE_PHOTO /* path of remote file stored in the bucket */, 
+      photo_name /* path of remote file stored in the bucket */, 
       "image/jpeg" /* mime type */)) {
     Serial.printf("\nDownload URL: %s\n", fbdo.downloadURL().c_str());
   }
