@@ -103,8 +103,8 @@ void readMotorsDB_Commands() {
 //-----------------------------------------------------------------------------
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println("**STARTING SETUP**");
+  Serial.begin(115200); // Serial port for debugging purposes
+  Serial.println("**STARTING ESP SETUP**");
   
   // Setting up pins
   setupMotorPins();
@@ -115,7 +115,7 @@ void setup() {
   // Connect to Firebase 
   FirebaseSetup();
   
-  Serial.println("**FINISHED SETUP**");
+  Serial.println("**FINISHED ESP SETUP**");
 }
 
 void loop() {
@@ -129,16 +129,16 @@ void loop() {
     }
     else if (robotMode == AUTONOMOUS) {
       Serial.println("entering autonomous movement");  
-      //sample distance sensors
+      // Sample distance sensors
       int distance1 = readDistanceRight(); //distance of sensor 1
       int distance2 = readDistanceFront(); //distance of sensor 2
 
-      //initinalize motors accordingly to the sensors (correction of movement according to the data)
+      // Initinalize motors accordingly to the sensors (correction of movement according to the data)
       setMororsValueBySensors(distance1, distance2);
     }
   }
   else {
     Serial.println("Error: Firebase connection error");
   }
-  delay(150); //The state sample delay     
+  delay(150); // The state sample delay     
 }
