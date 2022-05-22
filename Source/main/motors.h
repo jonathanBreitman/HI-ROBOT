@@ -19,5 +19,6 @@ extern bool forward;
 void setupMotorPins();
 void setMotorsValueByCommand();
 void setMororsValueBySensors(int distance_right, int distance_front);
+void stopEngine();
 
 #endif

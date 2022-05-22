@@ -119,13 +119,14 @@ void setup() {
 }
 
 void loop() {
-  delay(2000);
+  stopEngine();
   if (Firebase.ready() && signupOK) {
     Serial.println("firebase is ready");
     readMotorsDB_Commands();
     Serial.println("read robot state");
     if (robotMode == MANUAL) {
       setMotorsValueByCommand();
+      delay(150);
     }
     else if (robotMode == AUTONOMOUS) {
       Serial.println("entering autonomous movement");  
@@ -140,5 +141,4 @@ void loop() {
   else {
     Serial.println("Error: Firebase connection error");
   }
-  delay(150); //The state sample delay     
 }

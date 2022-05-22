@@ -1,9 +1,9 @@
 #include "motors.h"
 
 //Motor L298 PINS
-const int motorA1  = 32;  // IN3 Input of L298N
+const int motorA1  = 32;  // IN3 Input of L298N //A is left wheel
 const int motorA2  = 33;  // IN1 Input of L298N
-const int motorB1  = 18;  // IN2 Input of L298N
+const int motorB1  = 18;  // IN2 Input of L298N //B is right wheel
 const int motorB2  = 19;  // IN4 Input of L298N
 
 int vSpeed = 255;   // Standard Speed can take a value between 0-255
@@ -51,7 +51,31 @@ void setMotorsValueByCommand() {
     digitalWrite(motorA2, 0);
     digitalWrite(motorB1, 0);
     digitalWrite(motorB2, 0);
-  } //TODO: add multi-directional movement
+  } else if (forward && left && !backward && !right){
+    Serial.println("forward and left");
+    digitalWrite(motorA1, (int)vSpeed / 2);
+    digitalWrite(motorA2, 0);
+    digitalWrite(motorB1, vSpeed);
+    digitalWrite(motorB2, 0);
+  } else if (forward && !left && !backward && right){
+    Serial.println("forward and right");
+    digitalWrite(motorA1, vSpeed);
+    digitalWrite(motorA2, 0);
+    digitalWrite(motorB1, (int)vSpeed / 2);
+    digitalWrite(motorB2, 0);
+  } else if (!forward && !left && backward && right){
+    Serial.println("backwards and right");
+    digitalWrite(motorA1, 0);
+    digitalWrite(motorA2, vSpeed);
+    digitalWrite(motorB1, 0);
+    digitalWrite(motorB2, (int)vSpeed / 2);
+  } else if (!forward && left && backward && !right){
+    Serial.println("backwards and left");
+    digitalWrite(motorA1, 0);
+    digitalWrite(motorA2, (int)vSpeed / 2);
+    digitalWrite(motorB1, 0);
+    digitalWrite(motorB2, vSpeed);
+  }
 }
 
 void setMororsValueBySensors(int distance_right, int distance_front){
@@ -92,4 +116,11 @@ void setMororsValueBySensors(int distance_right, int distance_front){
   digitalWrite(motorB1, vSpeed);
   digitalWrite(motorB2, 0);
   delay(MOVE_FORWARD_DELAY);
+}
+
+void stopEngine(){
+  digitalWrite(motorA1, 0);
+  digitalWrite(motorA2, 0);
+  digitalWrite(motorB1, 0);
+  digitalWrite(motorB2, 0);
 }
