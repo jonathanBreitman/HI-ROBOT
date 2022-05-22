@@ -70,7 +70,7 @@ void readRealTimeDB_ValueInt(const char *param_name, int *output) {
 }
 
 void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
-  char start_str[150] = "wirelessCar/";
+  char start_str[150] = FILE_PATH;
       if (Firebase.RTDB.getBool(&fbdo, strcat(start_str, param_name))) {
         //Serial.println("READ: " + param_name + " succesfully");
         //Serial.println("PATH: " + fbdo.dataPath());
@@ -94,7 +94,7 @@ void readMotorsDB_Commands() {
   
   readRealTimeDB_ValueBool("forward", &forward);
   
-  readRealTimeDB_ValueBool("back", &backward);
+  readRealTimeDB_ValueBool("backwards", &backward);
   
   readRealTimeDB_ValueBool("left", &left);
   
@@ -119,13 +119,14 @@ void setup() {
 }
 
 void loop() {
-  delay(2000);
+  stopEngine();
   if (Firebase.ready() && signupOK) {
     Serial.println("firebase is ready");
     readMotorsDB_Commands();
     Serial.println("read robot state");
     if (robotMode == MANUAL) {
       setMotorsValueByCommand();
+      delay(150);
     }
     else if (robotMode == AUTONOMOUS) {
       Serial.println("entering autonomous movement");  
