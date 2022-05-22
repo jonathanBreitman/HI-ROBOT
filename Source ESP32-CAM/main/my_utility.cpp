@@ -1,5 +1,10 @@
 #include "my_utility.h"
 
+// Network Credentials
+#define WIFI_SSID "IOT"
+#define WIFI_PASSWORD "dreamy128"
+
+
 void connectToWiFi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
