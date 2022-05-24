@@ -27,14 +27,9 @@ class DetailsPage extends StatelessWidget {
                 child: Hero(
                   tag: 'logo$index',
                   child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30)),
-                      image: DecorationImage(
-                        image: AssetImage(imagePath),
-                        fit: BoxFit.cover,
-                      ),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5.0),
+                        child: Image.network(imagePath)
                     ),
                   ),
                 ),
