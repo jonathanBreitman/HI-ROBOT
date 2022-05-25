@@ -95,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
 
     final _appUser = Provider.of<AppUser>(context);
+
     //bool isAnyoneLoggedIn = _appUser.status == AuthStatus.Authenticated;
     return Scaffold(
       appBar: AppBar(
@@ -154,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: MediaQuery.of(context).size.height * 0.12,
               width: MediaQuery.of(context).size.width * 0.8,
               alignment: Alignment.center,
-              child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.user!.displayName! : "Welcome!",
+              child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.name : "Welcome!",
                 style: TextStyle(fontSize: 34),
               ),
             ),
@@ -171,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
                 }
                 else {
-                  if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                  if (_appUser.user!.uid == '3vXZ4BiK8SWYyTK3IbrJxJGo2nt1') {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -181,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                   else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(_appUser.user!.displayName! +
+                        SnackBar(content: Text(_appUser.name +
                             ' has no connected car...'),
                           duration: Duration(seconds: 1),));
                   }

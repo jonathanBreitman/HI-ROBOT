@@ -143,7 +143,7 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                               "forward": (dir == JoyStickDirection.UP_LEFT ||
                                 dir == JoyStickDirection.UP_RIGHT ||
                                 dir == JoyStickDirection.UP
-                            ), "backwards": (dir == JoyStickDirection.DOWN_LEFT ||
+                            ), "back": (dir == JoyStickDirection.DOWN_LEFT ||
                                 dir == JoyStickDirection.DOWN_RIGHT ||
                                 dir == JoyStickDirection.DOWN
                             ), "left": (dir ==
@@ -170,7 +170,12 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                 width: MediaQuery.of(context).size.width * 0.8,
 
                 child: ElevatedButton(onPressed: () {
-                  this._dbRef.update({'state': _isManual? 1: 0});
+                  /*Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              LiveFeedScreen())
+                  );*/
                   switchControlType();
                 },
                   child: Text(_isManual? 'Switch to Autonomous' : 'Switch to Manual',
