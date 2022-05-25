@@ -4,7 +4,6 @@ import 'package:control_pad/control_pad.dart';
 import 'utilities/helpful_classes.dart';
 import 'utilities/Authentication.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 
 
@@ -21,39 +20,6 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
   JoyStickDirection _joystickDir=JoyStickDirection.NONE;
   JoyStickPower _joystickPower=JoyStickPower.NONE;
   DatabaseReference _dbRef;
-
-  String liveStreamUrl = "http://thetenthwatch.com/feed/";
-  late VideoPlayerController _videoPlayerController;
-  bool startedPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _videoPlayerController =
-        VideoPlayerController.network(liveStreamUrl);
-    _videoPlayerController.addListener(() {
-      if (startedPlaying && !_videoPlayerController.value.isPlaying) {
-        Navigator.pop(context);
-      }
-      setState(() {});
-    });
-
-    _videoPlayerController.setLooping(true);
-  }
-
-  @override
-  void dispose() {
-    _videoPlayerController.dispose();
-    super.dispose();
-  }
-
-  Future<bool> started() async {
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.play();
-    startedPlaying = true;
-    return true;
-  }
 
   _LiveFeedScreenState({required DatabaseReference dbRef}) : _dbRef = dbRef;
   void switchControlType(){
@@ -90,21 +56,9 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.45,
                   width: MediaQuery.of(context).size.width * 0.85,
-                  child: FutureBuilder<bool>(
-                    future: started(),
-                    builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      if (snapshot.data ?? false) {
-                        return AspectRatio(
-                          aspectRatio: _videoPlayerController.value.aspectRatio,
-                          child: VideoPlayer(_videoPlayerController),
-                        );
-                      } else {
-                        return Container(
-
-                            child: CircularProgressIndicator()//const Text('waiting for video to load')
-                        );
-                      }
-                    },
+                  child: Image.asset(
+                    'assets/images/room_irobot_pov.jpg',
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),

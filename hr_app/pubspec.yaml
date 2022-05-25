@@ -43,7 +43,6 @@ dependencies:
   loader_overlay: ^2.0.6
   firebase_database: ^9.0.14
   intl: ^0.17.0
-  video_player: ^2.4.2
 
 
 dev_dependencies:
