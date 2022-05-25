@@ -34,6 +34,7 @@ class AppUser with ChangeNotifier {
   AppUser() {
     _user = _auth.currentUser;
     _onAuthStateChanged(_user);
+
   }
 
   AuthStatus get status => _status;
@@ -79,6 +80,7 @@ class AppUser with ChangeNotifier {
             "create user with email and password failed" + error.toString()));
     print("created user");
     _user = _auth.currentUser;
+    _user!.updateDisplayName(name);
     Map<String, dynamic> data = {
       'email': email,
       'password': password,
@@ -91,7 +93,7 @@ class AppUser with ChangeNotifier {
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
 
-    FirebaseDatabase.instance.ref('wirelessCar').set({'speed': 0, 'forward': false, 'back': false, 'left': false, 'right': false});
+    FirebaseDatabase.instance.ref('wirelessCar').set({'speed': 0, 'forward': false, 'backwards': false, 'left': false, 'right': false});
     //FirebaseDatabase.instance.ref('dir_commands/' + _user!.uid).set({'power': 0, 'forward': false, 'back': false, 'left': false, 'right': false});
     _status = AuthStatus.Authenticated;
     this.name = name;
@@ -106,6 +108,7 @@ class AppUser with ChangeNotifier {
       notifyListeners();
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       _user = _auth.currentUser;
+      _user!.updateDisplayName(name);
       var dbUser = await FirebaseFirestore.instance
           .collection(UsersStr)
           .doc(_auth.currentUser!.uid)
@@ -165,6 +168,7 @@ class AppUser with ChangeNotifier {
           .get()
           .catchError((error) => {print(error.toString())});
       name = await dbUser.data()!['name'];
+      _user!.updateDisplayName(name);
       return name;
     }
   }
