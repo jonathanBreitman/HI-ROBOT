@@ -2,6 +2,8 @@ import 'package:hr_app/my_flutter_app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_app/main.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+
 
 
 enum JoyStickDirection{
@@ -12,6 +14,8 @@ enum JoyStickPower{
 }
 
 String UsersStr = "Users";
+
+String liveVideoUrl = 'https://www.youtube.com/watch?v=hq5dvgK5roM';
 
 JoyStickDirection getJSDir(double degrees){
   JoyStickDirection dir = JoyStickDirection.NONE;

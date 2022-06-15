@@ -112,14 +112,11 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () async {
               if (!_appUser.isAuthenticated) {
                 // GO TO SIGN IN/UP PAGE
-                Navigator.pushAndRemoveUntil<dynamic>(
-                  context,
-                  MaterialPageRoute<dynamic>(
-                    builder: (BuildContext context) =>
-                        SignInPageWidget(),
-                  ),
-                      (route) =>
-                  false, //if you want to disable back feature set to false
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SignInPageWidget())
                 );
               }
               else{

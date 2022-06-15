@@ -40,7 +40,9 @@ Future<List<ImageDetails>> getImages(BuildContext context) async {
 
   for(int i=0;i<imageNames.length;i++){
     try{
-      DateTime image_date = DateTime.parse(imageNames[i]);
+      String dateSubstr = imageNames[i].substring(imageNames[i].indexOf(userImagesFileName) + userImagesFileName.length + 3, imageNames[i].indexOf(userImagesFileName) + userImagesFileName.length + 22);
+      dateSubstr = dateSubstr.substring(0, 10) + " " + dateSubstr.substring(13);
+      DateTime image_date = DateTime.parse(dateSubstr);
       image_details.add(ImageDetails(imagePath: imageNames[i], date: image_date, title: "", notes: ""));
     }
     catch(e){

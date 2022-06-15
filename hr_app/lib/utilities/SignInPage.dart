@@ -313,7 +313,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                               },
                               style: ButtonStyle(
                                   padding: MaterialStateProperty.all<EdgeInsets>(
-                                      EdgeInsets.all(15)),
+                                      EdgeInsets.all(17)),
                                   foregroundColor:
                                   MaterialStateProperty.all<Color>(
                                       Colors.white),
@@ -327,9 +327,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                       ))),
                               child: Text(
                                 'Don\'t have an account? Sign up!',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                ),
+
                               ),
                             ),
                           ),

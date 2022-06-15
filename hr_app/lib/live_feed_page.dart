@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:control_pad/control_pad.dart';
 import 'utilities/helpful_classes.dart';
 import 'utilities/Authentication.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 
 
@@ -20,6 +26,16 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
   JoyStickDirection _joystickDir=JoyStickDirection.NONE;
   JoyStickPower _joystickPower=JoyStickPower.NONE;
   DatabaseReference _dbRef;
+  final Completer<WebViewController> _controller =
+  Completer<WebViewController>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isAndroid) {
+      WebView.platform = SurfaceAndroidWebView();
+    }
+  }
 
   _LiveFeedScreenState({required DatabaseReference dbRef}) : _dbRef = dbRef;
   void switchControlType(){
@@ -32,6 +48,17 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
     _joystickDir=dir;
     _joystickPower=pow;
   }
+
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,10 +83,40 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.45,
                   width: MediaQuery.of(context).size.width * 0.85,
-                  child: Image.asset(
+                  child:
+                  WebView(
+                    initialUrl: liveVideoUrl,//'https://flutter.dev',
+                    javascriptMode: JavascriptMode.unrestricted,
+                    onWebViewCreated: (WebViewController webViewController) {
+                      _controller.complete(webViewController);
+                    },
+                    onProgress: (int progress) {
+                      print('WebView is loading (progress : $progress%)');
+                    },
+                    javascriptChannels: <JavascriptChannel>{
+                      _toasterJavascriptChannel(context),
+                    },
+                    navigationDelegate: (NavigationRequest request) {
+                      if (request.url.startsWith('https://www.youtube.com/')) {
+                        print('blocking navigation to $request}');
+                        return NavigationDecision.prevent;
+                      }
+                      print('allowing navigation to $request');
+                      return NavigationDecision.navigate;
+                    },
+                    onPageStarted: (String url) {
+                      print('Page started loading: $url');
+                    },
+                    onPageFinished: (String url) {
+                      print('Page finished loading: $url');
+                    },
+                    gestureNavigationEnabled: true,
+                    backgroundColor: const Color(0x00000000),
+                  ),
+                  /*Image.asset(
                     'assets/images/room_irobot_pov.jpg',
                     fit: BoxFit.fill,
-                  ),
+                  ),*/
                 ),
               ),
               SizedBox(
