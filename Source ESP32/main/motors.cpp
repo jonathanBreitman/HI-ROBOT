@@ -95,7 +95,7 @@ void setMororsValueBySensors(int distance_right, int distance_front) {
     digitalWrite(motorA2, 0);
     digitalWrite(motorB1, 0);
     digitalWrite(motorB2, vSpeed);
-    delay(RIGHT_CORRECTION_DELAY);
+    delay(WALL_DIST_CORRECTION_DELAY);
     return;
   }
 
@@ -105,7 +105,7 @@ void setMororsValueBySensors(int distance_right, int distance_front) {
     digitalWrite(motorA2, vSpeed);
     digitalWrite(motorB1, vSpeed);
     digitalWrite(motorB2, 0);
-    delay(RIGHT_CORRECTION_DELAY);
+    delay(WALL_DIST_CORRECTION_DELAY);
     return;
   }
 

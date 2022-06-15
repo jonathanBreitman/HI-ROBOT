@@ -50,7 +50,7 @@ void FirebaseSetup() {
   config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
   
   Firebase.begin(&config, &auth);
-  Firebase.reconnectWiFi(true);  
+  Firebase.reconnectWiFi(true); 
 }
 
 void readRealTimeDB_ValueInt(const char *param_name, int *output) {
@@ -113,14 +113,14 @@ void setup() {
   // Connect to WiFi
   connectToWiFi(); 
   // Connect to Firebase 
-  FirebaseSetup();
-  
+  while(!signupOK)
+    FirebaseSetup();
   Serial.println("**FINISHED ESP SETUP**");
 }
 
 void loop() {
-  stopEngine();
-  if (Firebase.ready() && signupOK) {
+  //stopEngine();
+  if (Firebase.ready()) {
     Serial.println("firebase is ready");
     readMotorsDB_Commands();
     Serial.println("read robot state");
@@ -131,11 +131,11 @@ void loop() {
     else if (robotMode == AUTONOMOUS) {
       Serial.println("entering autonomous movement");  
       // Sample distance sensors
-      int distance1 = readDistanceRight(); //distance of sensor 1
-      int distance2 = readDistanceFront(); //distance of sensor 2
+      int distanceRightSense = readDistanceRight(); //distance of sensor 1
+      int distanceFrontSense = readDistanceFront(); //distance of sensor 2
 
       // Initinalize motors accordingly to the sensors (correction of movement according to the data)
-      setMororsValueBySensors(distance1, distance2);
+      setMororsValueBySensors(distanceRightSense, distanceFrontSense);
     }
   }
   else {
