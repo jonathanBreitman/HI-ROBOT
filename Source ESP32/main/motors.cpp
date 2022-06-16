@@ -13,6 +13,7 @@ bool left = false;
 bool forward = false;
 
 void setupMotorPins() {
+  
   pinMode(motorA1, OUTPUT);
   pinMode(motorA2, OUTPUT);
   pinMode(motorB1, OUTPUT);
@@ -78,44 +79,39 @@ void setMotorsValueByCommand() {
   }
 }
 
-void setMororsValueBySensors(int distance_right, int distance_front) {
+void setMotorsValueBySensors(int distance_right, int distance_front) {
   if (distance_front < MIN_DISTANCE_FRONT) {//We are close to a corner, turn left
-    Serial.println("Go Left");
+    Serial.println("Go Left (90 degree corner)");
     digitalWrite(motorA1, 0);
     digitalWrite(motorA2, vSpeed);
     digitalWrite(motorB1, vSpeed);
     digitalWrite(motorB2, 0);
     delay(CORNER_DELAY);
-    return;
   }
-
-  if (distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
+  else if (distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
     Serial.println("Go Right");
     digitalWrite(motorA1, vSpeed);
     digitalWrite(motorA2, 0);
     digitalWrite(motorB1, 0);
     digitalWrite(motorB2, vSpeed);
     delay(WALL_DIST_CORRECTION_DELAY);
-    return;
   }
-
-  if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
+  else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
     Serial.println("Go Left");
     digitalWrite(motorA1, 0);
     digitalWrite(motorA2, vSpeed);
     digitalWrite(motorB1, vSpeed);
     digitalWrite(motorB2, 0);
     delay(WALL_DIST_CORRECTION_DELAY);
-    return;
   }
-
-  //If we got to this point, we are not in a corner and the robot is in an acceptable distance from the right wall, move forward
-  Serial.println("Go Forward");
-  digitalWrite(motorA1, vSpeed);
-  digitalWrite(motorA2, 0);
-  digitalWrite(motorB1, vSpeed);
-  digitalWrite(motorB2, 0);
-  delay(MOVE_FORWARD_DELAY);
+  else {//If we got to this point, we are not in a corner and the robot is in an acceptable distance from the right wall, move forward
+    Serial.println("Go Forward");
+    digitalWrite(motorA1, vSpeed);
+    digitalWrite(motorA2, 0);
+    digitalWrite(motorB1, vSpeed);
+    digitalWrite(motorB2, 0);
+    delay(MOVE_FORWARD_DELAY);
+  }
 }
 
 void stopEngine(){

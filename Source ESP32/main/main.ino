@@ -19,6 +19,9 @@
 #define MANUAL 0
 #define AUTONOMOUS 1
 
+#define MANUAL_DRIVE_DELAY 300
+#define NO_FIREBASE_DELAY 150
+
 int robotMode = MANUAL;
 
 // Firebase Data object
@@ -50,7 +53,7 @@ void FirebaseSetup() {
   config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
   
   Firebase.begin(&config, &auth);
-  Firebase.reconnectWiFi(true); 
+  Firebase.reconnectWiFi(true);
 }
 
 void readRealTimeDB_ValueInt(const char *param_name, int *output) {
@@ -89,23 +92,28 @@ void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
 void readMotorsDB_Commands() {
 
   readRealTimeDB_ValueInt("state", &robotMode);
-  
-  readRealTimeDB_ValueInt("speed", &vSpeed);
-  
-  readRealTimeDB_ValueBool("forward", &forward);
-  
-  readRealTimeDB_ValueBool("backwards", &backward);
-  
-  readRealTimeDB_ValueBool("left", &left);
-  
-  readRealTimeDB_ValueBool("right", &right);  
+  if(robotMode == MANUAL) {
+    readRealTimeDB_ValueInt("speed", &vSpeed);   
+    
+    readRealTimeDB_ValueBool("forward", &forward);
+    
+    readRealTimeDB_ValueBool("backwards", &backward);
+    
+    readRealTimeDB_ValueBool("left", &left);
+    
+    readRealTimeDB_ValueBool("right", &right);
+  }  
+  else{
+    vSpeed = 255;
+  }
 }
 //-----------------------------------------------------------------------------
 
 void setup() {
   Serial.begin(115200); // Serial port for debugging purposes
   Serial.println("**STARTING ESP SETUP**");
-  
+  //pinMode(2, OUTPUT);// Setup led pin
+  //digitalWrite(2, true)
   // Setting up pins
   setupMotorPins();
   // Setting up distance sensors
@@ -115,31 +123,33 @@ void setup() {
   // Connect to Firebase 
   while(!signupOK)
     FirebaseSetup();
+  
   Serial.println("**FINISHED ESP SETUP**");
 }
 
 void loop() {
-  //stopEngine();
+  stopEngine();
   if (Firebase.ready()) {
     Serial.println("firebase is ready");
     readMotorsDB_Commands();
+    
     Serial.println("read robot state");
     if (robotMode == MANUAL) {
       setMotorsValueByCommand();
-      delay(150);
+      delay(MANUAL_DRIVE_DELAY);
     }
     else if (robotMode == AUTONOMOUS) {
       Serial.println("entering autonomous movement");  
       // Sample distance sensors
       int distanceRightSense = readDistanceRight(); //distance of sensor 1
       int distanceFrontSense = readDistanceFront(); //distance of sensor 2
-
       // Initinalize motors accordingly to the sensors (correction of movement according to the data)
-      setMororsValueBySensors(distanceRightSense, distanceFrontSense);
+      setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
+      delay(MANUAL_DRIVE_DELAY);
     }
   }
   else {
     Serial.println("Error: Firebase connection error");
+    delay(NO_FIREBASE_DELAY); // The state sample delay
   }
-  delay(150); // The state sample delay     
 }

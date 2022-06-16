@@ -42,13 +42,13 @@ void setupDistanceSnsors() {
 
 // Returns the distance from the sensor in mm
 int readDistanceFront() {
-  distanceSensor1.startRanging(); //Write configuration bytes to initiate measurement
-  while (!distanceSensor1.checkForDataReady())
+  distanceSensor2.startRanging(); //Write configuration bytes to initiate measurement
+  while (!distanceSensor2.checkForDataReady())
     delay(1);
     
-  int distance = distanceSensor1.getDistance(); //Get the result of the measurement from the sensor
-  distanceSensor1.clearInterrupt();
-  distanceSensor1.stopRanging();
+  int distance = distanceSensor2.getDistance(); //Get the result of the measurement from the sensor
+  distanceSensor2.clearInterrupt();
+  distanceSensor2.stopRanging();
 
   Serial.print("Distance of sensor facing forward");
   Serial.print("(mm): ");
@@ -58,14 +58,13 @@ int readDistanceFront() {
 }
 
 int readDistanceRight() {
-    
-  distanceSensor2.startRanging(); //Write configuration bytes to initiate measurement
-  while (!distanceSensor2.checkForDataReady())
+  distanceSensor1.startRanging(); //Write configuration bytes to initiate measurement
+  while (!distanceSensor1.checkForDataReady())
     delay(1);
     
-  int distance = distanceSensor2.getDistance(); //Get the result of the measurement from the sensor
-  distanceSensor2.clearInterrupt();
-  distanceSensor2.stopRanging();
+  int distance = distanceSensor1.getDistance(); //Get the result of the measurement from the sensor
+  distanceSensor1.clearInterrupt();
+  distanceSensor1.stopRanging();
 
   Serial.print("Distance of sensor facing right");
   Serial.print("(mm): ");
