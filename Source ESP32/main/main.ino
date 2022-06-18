@@ -145,7 +145,6 @@ void loop() {
       int distanceFrontSense = readDistanceFront(); //distance of sensor 2
       // Initinalize motors accordingly to the sensors (correction of movement according to the data)
       setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
-      delay(MANUAL_DRIVE_DELAY);
     }
   }
   else {

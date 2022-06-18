@@ -2,12 +2,12 @@
 #define MOTORS_H
 
 #include <Arduino.h>
-#define MIN_DISTANCE_FRONT 100
-#define MIN_DISTANCE_RIGHT 50
-#define MAX_DISTANCE_RIGHT 100
+#define MIN_DISTANCE_FRONT 200
+#define MIN_DISTANCE_RIGHT 90
+#define MAX_DISTANCE_RIGHT 150
 
-#define CORNER_DELAY 600
-#define WALL_DIST_CORRECTION_DELAY 60
+#define CORNER_DELAY 550
+#define WALL_DIST_CORRECTION_DELAY 130
 #define MOVE_FORWARD_DELAY 800
 
 extern int vSpeed;   // Standard Speed can take a value between 0-255
