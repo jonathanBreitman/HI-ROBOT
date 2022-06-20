@@ -22,11 +22,13 @@
 
 const char* ssid = "IOT";
 const char* password = "dreamy128";
+int first_print = 0;
 
 void startCameraServer();
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("started running");
   Serial.setDebugOutput(true);
   Serial.println();
 
@@ -101,13 +103,20 @@ void setup() {
   Serial.println("WiFi connected");
 
   startCameraServer();
-
   Serial.print("Camera Ready! Use 'http://");
   Serial.print(WiFi.localIP());
   Serial.println("' to connect");
 }
 
 void loop() {
+  delay(10000);
+  if(first_print <= 3){
+    Serial.print("Camera Ready! Use 'http://");
+    Serial.print(WiFi.localIP());
+    Serial.println("' to connect");
+    first_print += 1;
+  }
   // put your main code here, to run repeatedly:
+  Serial.println("looping");
   delay(10000);
 }
