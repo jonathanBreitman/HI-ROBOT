@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'live_feed_page.dart';
 import 'utilities/SignInPage.dart';
 import 'utilities/Authentication.dart';
+import 'control_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState(){
     super.initState();
-    _dbref = FirebaseDatabase.instance.ref('wirelessCar');//FirebaseDatabase.instance.ref('dir_commands');
+    _dbref = FirebaseDatabase.instance.ref('wirelessCar');
   }
 
   @override
@@ -205,8 +206,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
                 }
                 else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('soon...'), duration: Duration(seconds: 1),));
+                  if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ControlScreen(db_ref: this._dbref))
+                    );
+                  }
+                  else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(_appUser.user!.displayName! +
+                            ' has no connected car...'),
+                          duration: Duration(seconds: 1),));
+                  }
                 }
               },
                 child: Text(
@@ -231,12 +244,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
                 }
                 else {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              SavedFootagePage())
-                  );
+                  if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                SavedFootagePage())
+                    );
+                  }
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(_appUser.user!.displayName! +
+                  ' has no connected car...'),
+                  duration: Duration(seconds: 1),));
+                  }
                 }
               },
                 child: Text(
@@ -250,29 +271,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.03,
-            ),
-            ///settings button
-            Container(
-              height: MediaQuery.of(context).size.height * 0.06,
-              width: MediaQuery.of(context).size.width * 0.6,
-
-              child: ElevatedButton(onPressed: () {
-                if(!_appUser.isAuthenticated){
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                }
-                else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('soon...'), duration: Duration(seconds: 1),));
-                }
-              },
-                child: Text(
-                  'Settings',
-                  style: TextStyle(fontSize: 24),
-                ),
-                style: ButtonStyle(
-
-                ),
-              ),
             ),
 
           ],

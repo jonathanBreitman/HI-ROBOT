@@ -1,8 +1,10 @@
+import 'package:flutter/services.dart';
 import 'package:hr_app/my_flutter_app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:hr_app/main.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 
 
@@ -115,6 +117,50 @@ class _generalAppBarState extends State<generalAppBar> {
         )
       ],
       title: Text(widget.title, style: TextStyle(color: Colors.white)),
+    );
+  }
+}
+
+class EditableSetting extends StatefulWidget {
+  final String settingDescription;
+  final String fieldName;
+  final String initVal;
+  final DatabaseReference _db_ref;
+  const EditableSetting({Key? key, this.settingDescription="", this.fieldName="", this.initVal="", required DatabaseReference db_ref}) : _db_ref=db_ref, super(key: key);
+
+  @override
+  _EditableSettingState createState() => _EditableSettingState();
+}
+
+class _EditableSettingState extends State<EditableSetting> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+
+      padding: const EdgeInsets.only(left: 10.0, right: 5.0),
+      height: MediaQuery.of(context).size.height*0.08,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.7,
+            height: MediaQuery.of(context).size.height*0.08,
+            child: TextFormField(
+              initialValue: widget.initVal,
+              decoration: InputDecoration(labelText: widget.settingDescription + ": ",
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              onChanged: (String val){
+                widget._db_ref.update({widget.fieldName: int.parse(val)});
+              },//
+              // Only numbers can be
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

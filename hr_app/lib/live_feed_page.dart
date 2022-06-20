@@ -22,11 +22,13 @@ class LiveFeedScreen extends StatefulWidget {
 }
 
 class _LiveFeedScreenState extends State<LiveFeedScreen> {
+
   bool _isManual=false;
   JoyStickDirection _joystickDir=JoyStickDirection.NONE;
   JoyStickPower _joystickPower=JoyStickPower.NONE;
   DatabaseReference _dbRef;
-  final Completer<WebViewController> _controller =
+  String _feed_url = "no_feed";//liveVideoUrl;
+  Completer<WebViewController> _controller =
   Completer<WebViewController>();
 
   @override
@@ -35,9 +37,33 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
     if (Platform.isAndroid) {
       WebView.platform = SurfaceAndroidWebView();
     }
+
+    getUrlFromDB().then((result) {
+      setFeedUrl(result);
+    });
+  }
+
+  Future<String> getUrlFromDB() async{
+    DatabaseReference urlRef = FirebaseDatabase.instance.ref("wirelessCar/feed_url");
+    final urlSnapshot = await urlRef.once(DatabaseEventType.value);
+    final url = urlSnapshot.snapshot.value?.toString() ?? 'no_feed';
+    urlRef.onValue.listen((event) {
+      String? data = event.snapshot.value as String;
+      setFeedUrl(data);
+    });
+    return url;
+
   }
 
   _LiveFeedScreenState({required DatabaseReference dbRef}) : _dbRef = dbRef;
+
+  void setFeedUrl(String new_url){
+    print("new url is $new_url");
+    setState(() {
+      _feed_url = new_url;
+      _controller.future.then((value) => value.loadUrl(new_url));
+    });
+  }
   void switchControlType(){
     setState(() {
       _isManual = !_isManual;
@@ -76,16 +102,16 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.08,
+                height: MediaQuery.of(context).size.height * 0.04,
               ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.45,
                   width: MediaQuery.of(context).size.width * 0.85,
-                  child:
+                  child: _feed_url != "no_feed"?
                   WebView(
-                    initialUrl: liveVideoUrl,//'https://flutter.dev',
+                    initialUrl: this._feed_url,//'https://flutter.dev',
                     javascriptMode: JavascriptMode.unrestricted,
                     onWebViewCreated: (WebViewController webViewController) {
                       _controller.complete(webViewController);
@@ -112,6 +138,11 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                     },
                     gestureNavigationEnabled: true,
                     backgroundColor: const Color(0x00000000),
+                  ):
+                  Center(
+                    child: Text('No feed available at the moment...',
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
                   /*Image.asset(
                     'assets/images/room_irobot_pov.jpg',
@@ -120,15 +151,30 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                 ),
               ),
               SizedBox(
-                height: _isManual? MediaQuery.of(context).size.height * 0.04 : MediaQuery.of(context).size.height * 0.12,
+                height: _isManual? MediaQuery.of(context).size.height * 0.02 : MediaQuery.of(context).size.height * 0.12,
               ),
               Container(
-                height: _isManual? MediaQuery.of(context).size.height * 0.15 : 0,
+                height: _isManual? MediaQuery.of(context).size.height * 0.21 : 0,
                 width: _isManual? MediaQuery.of(context).size.width * 0.5 : 0,
                 child: _isManual? Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
+                      ///take picture button
+                      IconButton(
+
+                        icon: Icon(Icons.camera_alt_rounded),
+                        onPressed: () async {
+                          this._dbRef.update({'snap_pic': 1});
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('took photo!'), duration: Duration(seconds: 1),));
+                        },
+                        iconSize: 50,
+                        splashColor: Colors.green,
+                        splashRadius: 30,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.02,
+                      ),
                       JoystickView(
                         size: 70,
                         showArrows: false,
@@ -169,7 +215,7 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                           }
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
+                        height: MediaQuery.of(context).size.height * 0.03,
                       ),
                     ]
                 )
