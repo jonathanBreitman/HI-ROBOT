@@ -6,12 +6,12 @@
 #include <addons/TokenHelper.h>
 
 // Firebase project API Key
-#define API_KEY "AIzaSyDRH9-Sf2FocGzuXt_8_nrcY4Gr0_jb440"
+#define API_KEY "AIzaSyAWjSDHTgJVYfuhwAVy9StRqDm_eqc0lwU"
 // Authorized Email and Corresponding Password
 #define USER_EMAIL "itamar128@gmail.com"
 #define USER_PASSWORD "Dreamy1208"
 // Firebase storage bucket ID e.g bucket-name.appspot.com
-#define STORAGE_BUCKET_ID "hi-robot-firebase.appspot.com"
+#define STORAGE_BUCKET_ID "hi-robot-c64d7.appspot.com"
 // RTDB URLefine the RTDB URL */
 #define DATABASE_URL "https://hi-robot-c64d7-default-rtdb.firebaseio.com/" 
 
@@ -64,8 +64,8 @@ void FirebaseSetup_v2() {
 
 void readRealTimeDB_ValueInt(const char *param_name, int *output) {
       char start_str[150] = FILE_PATH;
-      if (Firebase.RTDB.get(&fbdo, strcat(start_str, param_name))) {
-        //Serial.println("READ: " + param_name + " succesfully");
+      if (Firebase.RTDB.get(&fbdo, param_name)) {
+        Serial.printf("READ: %s succesfully!\n", param_name);
         //Serial.println("PATH: " + fbdo.dataPath());
         //Serial.println("TYPE: " + fbdo.dataType());
         //Serial.print("VALUE : ");
@@ -105,14 +105,14 @@ void capturePhotoAnUpload() {
   //update photo_number in real-time database FILE_PHOTO
   photo_number++;
   updateRealTimeDB_ValueInt(PHOTO_NUMBER, photo_number);
-
+  Serial.printf("Saving picture, picture name is: %s\n", photo_name);
   capturePhotoSaveSpiffs();
   Serial.print("Uploading picture... ");
   //MIME type should be valid to avoid the download problem.
   //The file systems for flash and SD/SDMMC can be changed in FirebaseFS.h.
   if (Firebase.Storage.upload(&fbdo, 
       STORAGE_BUCKET_ID /* Firebase Storage bucket id */, 
-      "wirelessCar/image.jpg" /* path to local file */, 
+      FILE_PHOTO /* path to local file */, 
       mem_storage_type_flash /* memory storage type, mem_storage_type_flash and mem_storage_type_sd */, 
       photo_name /* path of remote file stored in the bucket */, 
       "image/jpeg" /* mime type */)) {
@@ -135,15 +135,17 @@ void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   initCamera();
   // Connect to Firebase 
-  FirebaseSetup();
-  
+  while(!signupOK){
+    FirebaseSetup();
+  }    
   Serial.println("**FINISHED ESP-CAM SETUP**");
 }
 
 
 void loop() {
-  if (Firebase.ready() && signupOK) {
+  if (Firebase.ready()) {
     capturePhotoAnUpload();
+    Serial.println("entering delay");
     delay(TAKE_PHOTO);
   }
   else {

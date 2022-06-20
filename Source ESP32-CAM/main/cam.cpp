@@ -79,7 +79,7 @@ void capturePhotoSaveSpiffs() {
     }
     // Photo file name
     Serial.printf("Picture file name: %s\n", FILE_PHOTO);
-    File file = SPIFFS.open(FILE_PHOTO, FILE_WRITE);
+    File file = SPIFFS.open(FILE_PHOTO, "w+");
     // Insert the data in the photo file
     if (!file) {
       Serial.println("Failed to open file in writing mode");

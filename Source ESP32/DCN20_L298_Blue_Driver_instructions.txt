@@ -1,0 +1,15 @@
+L298 Blue Driver:
+Motors->Driver:
+	A->A,B->B
+	black->outer
+	red->inner
+Driver->ESP:
+
+	B1A->D32
+	B1B->D33
+
+	GND->GND
+	VCC->VIN(5V)
+	
+	A1A->D18
+	A1B->D19

@@ -33,7 +33,7 @@
 
 #define TAKE_PHOTO 1000*60*10  // Take a photo each 10 minutes 
 // Photo File Name to save in SPIFFS
-#define FILE_PHOTO "wirelessCar/footage"
+#define FILE_PHOTO "/wirelessCarFootage"
 #define PHOTO_NUMBER "wirelessCar/photo_number"
 
 void initSPIFFS();
