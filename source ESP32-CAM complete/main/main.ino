@@ -92,6 +92,18 @@ void updateRealTimeDB_ValueInt(const char *param_name, int value) {
     Serial.println("REASON: " + fbdo.errorReason());
   }
 }
+
+void updateRealTimeDB_ValueString(const char *param_name, const char* value){
+  char start_str[150] = FILE_PATH;
+  if (Firebase.RTDB.setString(&fbdo, strcat(start_str, param_name), value)){
+    Serial.println("PASSED");
+    Serial.println("PATH: " + fbdo.dataPath());
+    Serial.println("TYPE: " + fbdo.dataType());
+  } else {
+    Serial.println("FAILED");
+    Serial.println("REASON: " + fbdo.errorReason());
+  }
+}
 //-----------------------------------------------------------------------------
 //-------------------------------CAM-Upload-Photos-----------------------------
 void capturePhotoAnUpload() {
@@ -149,6 +161,7 @@ void setup() {
   //print video
   Serial.print("Camera Stream Ready! Go to: http://");
   Serial.println(WiFi.localIP());
+  updateRealTimeDB_ValueString("feed_url", WiFi.localIP().toString().c_str());
   startCameraServer();
   
   // Connect to Firebase 
