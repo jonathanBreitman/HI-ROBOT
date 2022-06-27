@@ -3,3 +3,8 @@ hi-robot-firebase.appspot.com
 
 web-api-key:
 AIzaSyDRH9-Sf2FocGzuXt_8_nrcY4Gr0_jb440
+
+firebase car owner user:
+jonathanbreitman@gmail.com
+and his password is:
+123456
