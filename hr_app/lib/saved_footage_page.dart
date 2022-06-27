@@ -7,19 +7,25 @@ import 'package:flutter/material.dart';
 import 'utilities/ImageInfoPage.dart';
 import 'utilities/helpful_classes.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'dart:collection';
+import 'package:tuple/tuple.dart';
+
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 
 
-Future<List<String>> getPicPaths(String fileName) async {
+Future<SplayTreeMap<DateTime, Tuple2<String,String>>> getPicPaths(String fileName) async {
   firebase_storage.ListResult result =
   await firebase_storage.FirebaseStorage.instance.ref().child(fileName).listAll();
 
-  List<String> image_names = List.generate(0, (index) => "");
+  SplayTreeMap<DateTime, Tuple2<String,String>> image_dates_and_paths = SplayTreeMap<DateTime, Tuple2<String,String>>();
 
   await Future.forEach(result.items, (firebase_storage.Reference ref) async {
     String imageUrl = await ref.getDownloadURL();
-    image_names.add(imageUrl);
+    firebase_storage.FullMetadata file_data = await ref.getMetadata();
+    DateTime file_date = file_data.updated!;
+    String file_title = file_data.name;
+    image_dates_and_paths[file_date] = Tuple2(file_title, imageUrl);
     print('Found file: $ref');
   });
 
@@ -27,7 +33,7 @@ Future<List<String>> getPicPaths(String fileName) async {
     print('Found directory: $ref');
   });
 
-  return image_names;
+  return image_dates_and_paths;
 }
 
 
@@ -35,21 +41,24 @@ Future<List<ImageDetails>> getImages(BuildContext context) async {
   String email = Provider.of<AppUser>(context, listen: false).user!.email!;
   String emailName = email.substring(0, email.indexOf("@"));
   String userImagesFileName = "robot_" + emailName + "_footage";
-  List<String> imageNames = await getPicPaths(userImagesFileName);
+  SplayTreeMap<DateTime, Tuple2<String,String>> imageDatesAndNames = await getPicPaths(userImagesFileName);
   List<ImageDetails> image_details = List.generate(0, (index) => ImageDetails(imagePath: "", date: DateTime.now(), title: "", notes: ""));
-
-  for(int i=0;i<imageNames.length;i++){
+  imageDatesAndNames.forEach((key, value) {
+    /*
     try{
-      String dateSubstr = imageNames[i].substring(imageNames[i].indexOf(userImagesFileName) + userImagesFileName.length + 3, imageNames[i].indexOf(userImagesFileName) + userImagesFileName.length + 22);
+      String dateSubstr = imageDatesAndNames[i].substring(imageDatesAndNames[i].indexOf(userImagesFileName) + userImagesFileName.length + 3, imageDatesAndNames[i].indexOf(userImagesFileName) + userImagesFileName.length + 22);
       dateSubstr = dateSubstr.substring(0, 10) + " " + dateSubstr.substring(13);
       DateTime image_date = DateTime.parse(dateSubstr);
-      image_details.add(ImageDetails(imagePath: imageNames[i], date: image_date, title: "", notes: ""));
+      image_details.add(ImageDetails(imagePath: imageDatesAndNames[i], date: image_date, title: "", notes: ""));
     }
     catch(e){
       print("Unknown Date picture name");
-      image_details.add(ImageDetails(imagePath: imageNames[i], date: DateTime(2000), title: "", notes: ""));
+      image_details.add(ImageDetails(imagePath: imageDatesAndNames[i], date: DateTime(2000), title: "", notes: ""));
     }
-  }
+    */
+    image_details.add(ImageDetails(imagePath: value.item2, date: key, title: value.item1, notes: ""));
+
+  });
   return image_details;
 }
 

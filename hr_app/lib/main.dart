@@ -8,6 +8,8 @@ import 'live_feed_page.dart';
 import 'utilities/SignInPage.dart';
 import 'utilities/Authentication.dart';
 import 'control_page.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,23 +69,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  bool isLoading = false;
+
   late DatabaseReference _dbref;
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   void initState(){
     super.initState();
     _dbref = FirebaseDatabase.instance.ref('wirelessCar');
+    isLoading = false;
+
+  }
+  void SwitchScreenTappabilty(){
+    setState(() {
+      this.isLoading = !this.isLoading;
+    });
   }
 
   @override
@@ -97,185 +97,227 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final _appUser = Provider.of<AppUser>(context);
     //bool isAnyoneLoggedIn = _appUser.status == AuthStatus.Authenticated;
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title,
-          style: TextStyle(color: Colors.green.shade900),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon( !_appUser.isAuthenticated?
-              Icons.account_circle : Icons.logout,
-              color: Colors.white,
-            ),
-            onPressed: () async {
-              if (!_appUser.isAuthenticated) {
-                // GO TO SIGN IN/UP PAGE
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SignInPageWidget())
-                );
-              }
-              else{
-                await _appUser.signOut();
-              }
-            },
-          )
-        ],
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            ///title text
-            Container(
-              height: MediaQuery.of(context).size.height * 0.12,
-              width: MediaQuery.of(context).size.width * 0.8,
-              alignment: Alignment.center,
-              child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.user!.displayName! : "Welcome!",
-                style: TextStyle(fontSize: 34),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.15,
-            ),
-            ///live video button
-            Container(
-              height: MediaQuery.of(context).size.height * 0.08,
-              width: MediaQuery.of(context).size.width * 0.8,
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
 
-              child: ElevatedButton(onPressed: () {
-                if(!_appUser.isAuthenticated){
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                }
-                else {
-                  if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LiveFeedScreen(db_ref: this._dbref))
-                    );
-                  }
-                  else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(_appUser.user!.displayName! +
-                            ' has no connected car...'),
-                          duration: Duration(seconds: 1),));
-                  }
-                }
-              },
-                child: Text(
-                    'Live Video!',
-                  style: TextStyle(fontSize: 30),
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: AbsorbPointer(
+        absorbing: this.isLoading,
+        child: LoaderOverlay(
+          useDefaultLoading: true,
+          overlayOpacity: 0.3,
+          overlayColor: Theme.of(context).primaryColor,
+          child: Scaffold(
+            appBar: AppBar(
+              // Here we take the value from the MyHomePage object that was created by
+              // the App.build method, and use it to set our appbar title.
+              title: Text(widget.title,
+                style: TextStyle(color: Colors.green.shade900),
+              ),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon( !_appUser.isAuthenticated?
+                    Icons.account_circle : Icons.logout,
+                    color: Colors.white,
                   ),
-                style: ButtonStyle(
-
-                ),
-              ),
+                  onPressed: () async {
+                    if (!_appUser.isAuthenticated) {
+                      // GO TO SIGN IN/UP PAGE
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  SignInPageWidget())
+                      );
+                    }
+                    else{
+                      await _appUser.signOut();
+                    }
+                  },
+                )
+              ],
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.04,
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.06,
-              width: MediaQuery.of(context).size.width * 0.6,
+            body: Center(
+              // Center is a layout widget. It takes a single child and positions it
+              // in the middle of the parent.
+              child: Column(
+                // Column is also a layout widget. It takes a list of children and
+                // arranges them vertically. By default, it sizes itself to fit its
+                // children horizontally, and tries to be as tall as its parent.
+                //
+                // Invoke "debug painting" (press "p" in the console, choose the
+                // "Toggle Debug Paint" action from the Flutter Inspector in Android
+                // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+                // to see the wireframe for each widget.
+                //
+                // Column has various properties to control how it sizes itself and
+                // how it positions its children. Here we use mainAxisAlignment to
+                // center the children vertically; the main axis here is the vertical
+                // axis because Columns are vertical (the cross axis would be
+                // horizontal).
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  ///title text
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.12,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    alignment: Alignment.center,
+                    child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.user!.displayName! : "Welcome!",
+                      style: TextStyle(fontSize: 34),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                  ),
+                  ///live video button
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width * 0.8,
 
-              child: ElevatedButton(onPressed: () {
-                if(!_appUser.isAuthenticated){
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                }
-                else {
-                  if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ControlScreen(db_ref: this._dbref))
-                    );
-                  }
-                  else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    child: ElevatedButton(onPressed: () {
+                      if(!_appUser.isAuthenticated){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                      }
+                      else {
+                        if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      LiveFeedScreen(db_ref: this._dbref))
+                          );
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(_appUser.user!.displayName! +
+                                  ' has no connected car...'),
+                                duration: Duration(seconds: 1),));
+                        }
+                      }
+                    },
+                      child: Text(
+                          'Live Video!',
+                        style: TextStyle(fontSize: 30),
+                        ),
+                      style: ButtonStyle(
+
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.04,
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    width: MediaQuery.of(context).size.width * 0.6,
+
+                    child: ElevatedButton(onPressed: () async {
+                      if(!_appUser.isAuthenticated){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                      }
+                      else {
+                        if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                          //fetch control data from firebase (and disable tappability while loading)
+                          FocusScopeNode currentFocus = FocusScope.of(context);
+                          if (!currentFocus.hasPrimaryFocus)
+                            currentFocus.unfocus();
+                          context.loaderOverlay.show();
+                          this.SwitchScreenTappabilty();
+                          Map<String, Object> dbFields = await getFieldsFromDB();
+                          context.loaderOverlay.hide();
+                          this.SwitchScreenTappabilty();
+                          setState(() {});
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ControlScreen(db_ref: this._dbref, fields: dbFields))
+                          );
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(_appUser.user!.displayName! +
+                                  ' has no connected car...'),
+                                duration: Duration(seconds: 1),));
+                        }
+                      }
+                    },
+                      child: Text(
+                        'Control',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      style: ButtonStyle(
+
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.03,
+                  ),
+                  ///saved data button
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    width: MediaQuery.of(context).size.width * 0.6,
+
+                    child: ElevatedButton(onPressed: () {
+                      if(!_appUser.isAuthenticated){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                      }
+                      else {
+                        if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SavedFootagePage())
+                          );
+                        }
+                      else {
+                        ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(_appUser.user!.displayName! +
-                            ' has no connected car...'),
-                          duration: Duration(seconds: 1),));
-                  }
-                }
-              },
-                child: Text(
-                  'Control',
-                  style: TextStyle(fontSize: 24),
-                ),
-                style: ButtonStyle(
+                        ' has no connected car...'),
+                        duration: Duration(seconds: 1),));
+                        }
+                      }
+                    },
+                      child: Text(
+                        'Saved Footage',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      style: ButtonStyle(
 
-                ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.03,
+                  ),
+
+                ],
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.03,
-            ),
-            ///saved data button
-            Container(
-              height: MediaQuery.of(context).size.height * 0.06,
-              width: MediaQuery.of(context).size.width * 0.6,
-
-              child: ElevatedButton(onPressed: () {
-                if(!_appUser.isAuthenticated){
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                }
-                else {
-                  if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                SavedFootagePage())
-                    );
-                  }
-                else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(_appUser.user!.displayName! +
-                  ' has no connected car...'),
-                  duration: Duration(seconds: 1),));
-                  }
-                }
-              },
-                child: Text(
-                  'Saved Footage',
-                  style: TextStyle(fontSize: 24),
-                ),
-                style: ButtonStyle(
-
-                ),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.03,
-            ),
-
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<Map<String, Object>> getFieldsFromDB() async{
+    Map<String, Object> fields = {};
+    DatabaseReference cornersRef = FirebaseDatabase.instance.ref("wirelessCar/corners_number");
+    final cornerSnapshot = await cornersRef.once(DatabaseEventType.value);
+    final String cornersNum = cornerSnapshot.snapshot.value?.toString() ?? '4';
+    fields.putIfAbsent("corners_number", () => cornersNum);
+
+    DatabaseReference intervalRef = FirebaseDatabase.instance.ref("wirelessCar/snap_interval");
+    final intervalSnapshot = await intervalRef.once(DatabaseEventType.value);
+    final String intervalTime = intervalSnapshot.snapshot.value?.toString() ?? '60';
+    fields.putIfAbsent("snap_interval", () => intervalTime);
+
+    return fields;
   }
 }
