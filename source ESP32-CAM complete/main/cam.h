@@ -38,7 +38,7 @@
 
 #define TAKE_PHOTO 1000*60*10  // Take a photo each 10 minutes 
 // Photo File Name to save in SPIFFS
-#define FILE_PHOTO "/wirelessCarFootage"
+#define FILE_PHOTO "/robot_jonathanbreitman_footage"
 #define PHOTO_NUMBER "photo_number"
 
 #define PART_BOUNDARY "123456789000000000000987654321"
