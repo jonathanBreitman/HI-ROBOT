@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "751111240144",
+    "project_id": "hi-robot-c64d7",
+    "storage_bucket": "hi-robot-c64d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751111240144:android:39a96fcc7cb3a1284161d5",
+        "android_client_info": {
+          "package_name": "com.technion.iot.hirobot.hr_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "751111240144-d6d1tp9kr7nbmhtqarpka7jm1e1280gk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsAm6KgLZ0SOUuGiuYKaMPYBmeAGPgnKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "751111240144-d6d1tp9kr7nbmhtqarpka7jm1e1280gk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
