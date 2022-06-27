@@ -1,3 +1,4 @@
+//important, in order to avoid failed compilation goto Tools->Board and make sure the selected board is "AI-Thinker ESP32-CAM"
 #include "my_utility.h"
 #include "cam.h"
 
@@ -67,7 +68,7 @@ void FirebaseSetup_v2() {
 void readRealTimeDB_ValueInt(const char *param_name, int *output) {
       char start_str[150] = FILE_PATH;
       if (Firebase.RTDB.get(&fbdo, strcat(start_str, param_name))) {
-        Serial.printf("READ: %s succesfully!\n", param_name);
+        //Serial.printf("READ: %s succesfully!\n", param_name);
         //Serial.println("PATH: " + fbdo.dataPath());
         //Serial.println("TYPE: " + fbdo.dataType());
         //Serial.print("VALUE : ");
@@ -119,6 +120,7 @@ void capturePhotoAnUpload() {
   
   //update photo_number in real-time database FILE_PHOTO
   photo_number++;
+  Serial.println("updating photo_number");
   updateRealTimeDB_ValueInt(PHOTO_NUMBER, photo_number);
   Serial.printf("Saving picture, picture name is: %s\n", photo_name);
   capturePhotoSaveSpiffs();
@@ -161,13 +163,17 @@ void setup() {
   //print video
   Serial.print("Camera Stream Ready! Go to: http://");
   Serial.println(WiFi.localIP());
-  updateRealTimeDB_ValueString("feed_url", WiFi.localIP().toString().c_str());
   startCameraServer();
   
   // Connect to Firebase 
   while(!signupOK){
     FirebaseSetup();
-  }    
+  }
+
+  Serial.println("updating feed_url");
+  updateRealTimeDB_ValueString("feed_url", WiFi.localIP().toString().c_str());
+
+  
   Serial.println("**FINISHED ESP-CAM SETUP**");
 }
 
