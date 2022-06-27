@@ -22,17 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e32e86d-dba6-4a4e-86b0-3f859b85453c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/live_feed_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/live_feed_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/saved_footage_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/saved_footage_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utilities/SignInPage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utilities/SignInPage.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utilities/helpful_classes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utilities/helpful_classes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="4e32e86d-dba6-4a4e-86b0-3f859b85453c" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
