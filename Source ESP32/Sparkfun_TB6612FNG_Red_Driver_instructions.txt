@@ -1,0 +1,13 @@
+TB6612FNG Driver:
+Right side:
+VM->VIN
+VCC->VIN
+GND->GND
+A01->motor red
+A02->motor white
+
+Left side:
+PWMA->D25
+AIN2->D14
+AIN1->D13
+STBY->D33
