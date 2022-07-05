@@ -1,6 +1,7 @@
 #include "my_utility.h"
 #include "motors.h"
 #include "distance_sensors.h"
+#include "charge_detect.h"
 
 #include <Firebase_ESP_Client.h>
 //Provide the token generation process info.
@@ -111,13 +112,13 @@ void readMotorsDB_Commands() {
 
 void setup() {
   Serial.begin(115200); // Serial port for debugging purposes
+  delay(5000);
   Serial.println("**STARTING ESP SETUP**");
-  //pinMode(2, OUTPUT);// Setup led pin
-  //digitalWrite(2, true)
-  // Setting up pins
-  setupMotorPins();
   // Setting up distance sensors
   setupDistanceSnsors();
+  //setup motors and charging sensor
+  setupMotorPins();
+  setupChargeDetection();
   // Connect to WiFi
   connectToWiFi(); 
   // Connect to Firebase 
