@@ -135,8 +135,7 @@ void loop() {
     
     Serial.println("read robot state");
     if (robotMode == MANUAL) {
-      setMotorsValueByCommand();
-      delay(MANUAL_DRIVE_DELAY);
+      setMotorsValueByCommand(MANUAL_DRIVE_DELAY);
     }
     else if (robotMode == AUTONOMOUS) {
       Serial.println("entering autonomous movement");  

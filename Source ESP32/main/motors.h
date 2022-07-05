@@ -10,6 +10,16 @@
 #define WALL_DIST_CORRECTION_DELAY 130
 #define MOVE_FORWARD_DELAY 800
 
+#include <TB6612FNG.h>
+
+#define AIN1 13
+#define BIN1 23
+#define AIN2 14
+#define BIN2 19
+#define PWMA 25
+#define PWMB 18
+#define STBY 33
+
 extern int vSpeed;   // Standard Speed can take a value between 0-255
 extern bool backward;
 extern bool right;
@@ -17,7 +27,7 @@ extern bool left;
 extern bool forward;
 
 void setupMotorPins();
-void setMotorsValueByCommand();
+void setMotorsValueByCommand(int delay_movement);
 void setMotorsValueBySensors(int distance_right, int distance_front);
 void stopEngine();
 
