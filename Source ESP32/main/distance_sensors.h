@@ -12,7 +12,7 @@
 #include "SparkFun_VL53L1X.h" //Click here to get the library: http://librarymanager/All#SparkFun_VL53L1X
 
 
-void setupDistanceSnsors();
+void setupDistanceSensors();
 int readDistanceFront();  
 int readDistanceRight();  
 

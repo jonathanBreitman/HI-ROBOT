@@ -1,9 +1,9 @@
-Right Distance Sensor (Red Loop):
+Right Distance Sensor:
 VIN->3V
 GND->GND
 SCL->D22
 SDA->D21
-Front Distance Sensor:
+Front Distance Sensor (Red Loop):
 VIN->3V
 GND->GND
 SCL->D26

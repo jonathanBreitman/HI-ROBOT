@@ -4,12 +4,6 @@
 #define WIFI_SSID "IOT"
 #define WIFI_PASSWORD "dreamy128"
 
-int robotMode = MANUAL;
-int cornerNumber = 4;
-int currCornerNumber = 0; //  0 - (corrner_number-1)
-time_t lastChargeTime;
-time_t currentTime;
-time_t startChargeTime;
 
 void connectToWiFi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);

@@ -22,7 +22,26 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e32e86d-dba6-4a4e-86b0-3f859b85453c" name="Default Changelist" comment="" />
+    <list default="true" id="4e32e86d-dba6-4a4e-86b0-3f859b85453c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../ESP32-Arduino-TB6612FNG-master.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ESP32-CAM-Webserver vid/main/main.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32-CAM footage/main/cam.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32-CAM footage/main/cam.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32-CAM footage/main/main.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32-CAM footage/main/my_utility.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32-CAM footage/main/my_utility.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/VL53L0_1XV2_Distance_Sensor_instructions.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/VL53L0_1XV2_Distance_Sensor_instructions.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/distance_sensors.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/distance_sensors.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/distance_sensors.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/distance_sensors.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/main.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/main.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/motors.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/motors.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/motors.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/motors.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/my_utility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/my_utility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Source ESP32/main/my_utility.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Source ESP32/main/my_utility.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../get_engine_message/get_engine_message.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../new_driver_testing/main/main.ino" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

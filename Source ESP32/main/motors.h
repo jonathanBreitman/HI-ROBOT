@@ -1,6 +1,6 @@
 #ifndef MOTORS_H
 #define MOTORS_H
-
+#include "my_utility.h"
 #include <Arduino.h>
 #define MIN_DISTANCE_FRONT 200
 #define MIN_DISTANCE_RIGHT 90
@@ -30,5 +30,7 @@ void setupMotorPins();
 void setMotorsValueByCommand(int delay_movement);
 void setMotorsValueBySensors(int distance_right, int distance_front);
 void stopEngine();
+
+bool chargingHandle(int distanceFront);
 
 #endif
