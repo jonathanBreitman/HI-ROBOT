@@ -1,5 +1,12 @@
 #include "motors.h"
 
+extern int robotMode;
+extern int cornerNumber;
+extern int currCornerNumber; //  0 - (corner_number-1)
+extern time_t lastChargeTime;
+extern time_t currentTime;
+extern time_t startChargeTime;
+
 int vSpeed = 255;   // Standard Speed can take a value between 0-255
 bool backward = false;
 bool right = false;
@@ -50,6 +57,31 @@ void setMotorsValueByCommand(int delay_movement) {
     motors->drive(-0.5*my_speed, -my_speed, delay_movement);
   }
 }
+
+// Check if in corner, if so, check if this is the 0 corner, if so, check if we are after charging interaval 
+// and if so get into station and start timer. 
+// Return True if got into charging station, False otherwise.
+bool chargingHandle(int distanceFront) {           
+  if (distanceFront < MIN_DISTANCE_FRONT) {                   // We are in a corner
+    currCornerNumber=(currCornerNumber+1)%cornerNumber;
+    if (!(currCornerNumber % cornerNumber)) {                 // We are in a 0 corner => we are in charging station 
+      time(&currentTime);                                     // Sample current time
+      if ((currentTime - lastChargeTime)>CHARGING_INTERVAL) { // It's time to charge! 
+        // TODO: get inside the charging station logic fine tuning   
+        Serial.println("Go Forward into charging station");
+        motors->drive(1.0, 1.0, FORWARD_CHARGING_DELAY);        
+        while(!isCharging()){   // TODO: make sure u are connected if failed, make proper adjustment
+          Serial.println("Error finding charging station");
+          delay(100)
+        }  
+        Serial.println("Success - in charge");
+        time(&startChargeTime);                               // Start clock for charging 
+        return true;
+      }   
+    }    
+  }
+  return false;
+}      
 
 void setMotorsValueBySensors(int distance_right, int distance_front) {
   if (distance_front < MIN_DISTANCE_FRONT) {//We are close to a corner, turn left

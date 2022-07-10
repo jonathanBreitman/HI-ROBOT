@@ -17,13 +17,19 @@
 // Path for file in Firebase
 #define FILE_PATH "wirelessCar/" 
 
-#define MANUAL 0
-#define AUTONOMOUS 1
-
 #define MANUAL_DRIVE_DELAY 300
 #define NO_FIREBASE_DELAY 150
 
-int robotMode = MANUAL;
+int lastState;
+extern int robotMode;
+extern int cornerNumber;
+extern int currCornerNumber; //  0 - (corner_number-1)
+//time_t rawtime aka long int (%ld) contains the number of seconds since 1970
+//time(&rawtime);
+extern time_t lastChargeTime;
+extern time_t currentTime;
+extern time_t startChargeTime;
+extern Tb6612fng* motors;
 
 // Firebase Data object
 FirebaseData fbdo;
@@ -31,10 +37,8 @@ FirebaseAuth auth;
 FirebaseConfig config;
 bool signupOK = false;
 
-
 //-------------------------------Firebase--------------------------------------
 void FirebaseSetup() {
-  
   /* Assign the api key (required) */
   config.api_key = API_KEY;
   /* Assign the RTDB URL (required) */
@@ -88,6 +92,19 @@ void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
         Serial.println("REASON: " + fbdo.errorReason());
       }  
 }
+
+void updateRealTimeDB_ValueInt(const char *param_name, int value) {
+  char start_str[150] = FILE_PATH;
+  if (Firebase.RTDB.setInt(&fbdo, strcat(start_str, param_name), value)) {
+    Serial.println("PASSED");
+    Serial.println("PATH: " + fbdo.dataPath());
+    Serial.println("TYPE: " + fbdo.dataType());
+  }
+  else {
+    Serial.println("FAILED");
+    Serial.println("REASON: " + fbdo.errorReason());
+  }
+}
 //-----------------------------------------------------------------------------
 //------------------------------Motors-----------------------------------------
 void readMotorsDB_Commands() {
@@ -109,13 +126,13 @@ void readMotorsDB_Commands() {
   }
 }
 //-----------------------------------------------------------------------------
-
 void setup() {
   Serial.begin(115200); // Serial port for debugging purposes
   delay(5000);
+  time(&lastChargeTime);
   Serial.println("**STARTING ESP SETUP**");
   // Setting up distance sensors
-  setupDistanceSnsors();
+  setupDistanceSensors();
   //setup motors and charging sensor
   setupMotorPins();
   setupChargeDetection();
@@ -123,8 +140,9 @@ void setup() {
   connectToWiFi(); 
   // Connect to Firebase 
   while(!signupOK)
-    FirebaseSetup();
-  
+    FirebaseSetup();   
+  //set corner number  
+  readRealTimeDB_ValueInt("corners_number", &cornerNumber); 
   Serial.println("**FINISHED ESP SETUP**");
 }
 
@@ -132,20 +150,39 @@ void loop() {
   stopEngine();
   if (Firebase.ready()) {
     Serial.println("firebase is ready");
-    readMotorsDB_Commands();
-    
+    lastState = robotMode;
     Serial.println("read robot state");
+    readMotorsDB_Commands();    
+    if (robotMode == AUTONOMOUS && lastState == MANUAL)
+      currCornerNumber = 0;         
     if (robotMode == MANUAL) {
       setMotorsValueByCommand(MANUAL_DRIVE_DELAY);
     }
-    else if (robotMode == AUTONOMOUS) {
+    else if (robotMode == AUTONOMOUS) {      
       Serial.println("entering autonomous movement");  
       // Sample distance sensors
       int distanceRightSense = readDistanceRight(); //distance of sensor 1
-      int distanceFrontSense = readDistanceFront(); //distance of sensor 2
-      // Initinalize motors accordingly to the sensors (correction of movement according to the data)
-      setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
+      int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
+      // In case we in corner and needs to charge -> handle it.
+      if (chargingHandle(distanceFrontSense)) {
+        updateRealTimeDB_ValueInt("state", AUTONOMOUS_IN_CHARGE);
+        robotMode = AUTONOMOUS_IN_CHARGE;
+      }              
+      if (robotMode != AUTONOMOUS_IN_CHARGE) { // Initinalize motors accordingly to the sensors (correction of movement according to the data)
+        setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
+      }       
     }
+    else if (robotMode == AUTONOMOUS_IN_CHARGE) {
+      time(&currentTime);                                  // Sample current time
+      if ((currentTime - startChargeTime)>CHARGING_TIME){  // Check if we done chargeing 
+        lastChargeTime = currentTime;                      // Update last charge time             
+        Serial.println("Go Backward exit charging station");
+        motors->drive(-1.0, -1.0, FORWARD_CHARGING_DELAY); 
+        // TODO: make 90 degree (plus a little bit forward) 
+        updateRealTimeDB_ValueInt("state", AUTONOMOUS);
+        robotMode = AUTONOMOUS;
+      }
+    }      
   }
   else {
     Serial.println("Error: Firebase connection error");

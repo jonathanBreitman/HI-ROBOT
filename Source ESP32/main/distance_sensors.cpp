@@ -11,7 +11,7 @@ SFEVL53L1X distanceSensor1(I2Cone);
 SFEVL53L1X distanceSensor2(I2Ctwo);
 
 //sets up 2 sda and scl in the define pins
-void setupDistanceSnsors() {
+void setupDistanceSensors() {
   Serial.println("Setting up Two VL53L1X - distance sensors");
   uint32_t my_freq = 100000;
   int my_sda = SDA_1;
