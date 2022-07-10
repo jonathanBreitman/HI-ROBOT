@@ -1,4 +1,5 @@
 #include "motors.h"
+#include "charge_detect.h"
 
 extern int robotMode;
 extern int cornerNumber;
@@ -20,6 +21,7 @@ bool forward = false;
 Tb6612fng* motors;
 
 void setupMotorPins() {
+  WebSerial.println("starting motor setup pins");
   motors = new Tb6612fng(STBY, AIN1, AIN2, PWMA, BIN1, BIN2, PWMB);
   motors->begin();
 }
@@ -27,33 +29,34 @@ void setupMotorPins() {
 
 void setMotorsValueByCommand(int delay_movement) {
   float my_speed = (float)vSpeed / 255.0;
-  Serial.printf("my speed: %f\n", my_speed);
+  WebSerial.print("my speed: ");
+  WebSerial.println(my_speed);
   if (forward && !left && !right){
-    Serial.println("Go Forward");
+    WebSerial.println("Go Forward");
     motors->drive(my_speed, my_speed, delay_movement);
   } else if (left && !forward && !backward) {
-    Serial.println("Go Left");
+    WebSerial.println("Go Left");
     motors->drive(-my_speed, my_speed, delay_movement);
   } else if (right && !forward && !backward) {
-    Serial.println("Go Right");
+    WebSerial.println("Go Right");
     motors->drive(my_speed, -my_speed, delay_movement);
   } else if (backward && !left && !right) {
-    Serial.println("Go Backward");
+    WebSerial.println("Go Backward");
     motors->drive(-my_speed, -my_speed, delay_movement);
   } else if (!forward && !backward && !left && !right){
-    Serial.println("Stopping");
+    WebSerial.println("Stopping");
     motors->brake();
   } else if (forward && left && !backward && !right){
-    Serial.println("forward and left");
+    WebSerial.println("forward and left");
     motors->drive(-0.5*my_speed, my_speed, delay_movement);
   } else if (forward && !left && !backward && right){
-    Serial.println("forward and right");
+    WebSerial.println("forward and right");
     motors->drive(my_speed, -0.5*my_speed, delay_movement);
   } else if (!forward && !left && backward && right){
-    Serial.println("backwards and right");
+    WebSerial.println("backwards and right");
     motors->drive(-my_speed, -0.5*my_speed, delay_movement);
   } else if (!forward && left && backward && !right){
-    Serial.println("backwards and left");
+    WebSerial.println("backwards and left");
     motors->drive(-0.5*my_speed, -my_speed, delay_movement);
   }
 }
@@ -68,50 +71,69 @@ bool chargingHandle(int distanceFront) {
       time(&currentTime);                                     // Sample current time
       if ((currentTime - lastChargeTime)>CHARGING_INTERVAL) { // It's time to charge! 
         // TODO: get inside the charging station logic fine tuning   
-        Serial.println("Go Forward into charging station");
-        motors->drive(1.0, 1.0, FORWARD_CHARGING_DELAY);        
-        while(!isCharging()){   // TODO: make sure u are connected if failed, make proper adjustment
-          Serial.println("Error finding charging station");
-          delay(100)
+        WebSerial.println("Go Forward into charging station");
+        motors->drive(1.0, 1.0, FORWARD_CHARGING_DELAY); 
+        int i = 1;       
+        while(!isCharging()){
+          WebSerial.println("Error finding charging station, shaking");
+          shake_to_charge(i);
+          i += 1;
+          delay(100);
         }  
-        Serial.println("Success - in charge");
+        WebSerial.println("Success - in charge");
         time(&startChargeTime);                               // Start clock for charging 
         return true;
       }   
     }    
   }
   return false;
-}      
+}
+
+void turn_90_degree_left(){
+  WebSerial.println("Go Left (90 degree corner)");
+  motors->drive(-1.0, 1.0, CORNER_DELAY);
+  motors->drive(1.0, 1.0, CORNER_DELAY_FORWARD);
+}
+
+void shake_to_charge(int iteration){
+  if(iteration % 2 == 0){
+    WebSerial.println("shaking right");
+    motors->drive(1.0, -1.0, SHAKE_DELAY*iteration);
+  } else {
+    WebSerial.println("shaking left");
+    motors->drive(-1.0, 1.0, SHAKE_DELAY*iteration);
+  }
+}
 
 void setMotorsValueBySensors(int distance_right, int distance_front) {
   if (distance_front < MIN_DISTANCE_FRONT) {//We are close to a corner, turn left
-    Serial.println("Go Left (90 degree corner)");
-    motors->drive(-1.0, 1.0, CORNER_DELAY);
-    motors->drive(1.0, 1.0, MOVE_FORWARD_DELAY / 2);
+    turn_90_degree_left();
   }
   else if (distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
-    Serial.println("Go Right");
+    WebSerial.println("Go Right");
     //turn to the right
     motors->drive(1.0, 0.0, WALL_DIST_CORRECTION_DELAY);
     //continue slightly forward
-    motors->drive(1.0, 1.0, WALL_DIST_CORRECTION_DELAY*5/2);
+    motors->drive(1.0, 1.0, RIGHT_CORRECTION_FORWARD);
     //turn left
-    motors->drive(0.0, 1.0, WALL_DIST_CORRECTION_DELAY/2);
+    motors->drive(0.0, 1.0, WALL_DIST_CORRECTION_DELAY * 3/4);
   }
   else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
-    Serial.println("Go Left");
+    WebSerial.println("Go Left");
     //turn to the left
-    motors->drive(-1.0, 1.0, WALL_DIST_CORRECTION_DELAY);
+    motors->drive(-1.0, 1.0, LEFT_CORRECTION);
     //continue slightly forward
-    motors->drive(1.0, 1.0, WALL_DIST_CORRECTION_DELAY);
-    
+    motors->drive(1.0, 1.0, LEFT_CORRECTION_FORWARD);
+    //turn right
+    motors->drive(1.0, 0.0, LEFT_CORRECTION * 2/3);    
   }
   else {//If we got to this point, we are not in a corner and the robot is in an acceptable distance from the right wall, move forward
-    Serial.println("Go Forward");
+    WebSerial.println("Go Forward");
     motors->drive(1.0, 1.0, MOVE_FORWARD_DELAY);
   }
 }
 
 void stopEngine(){
+  WebSerial.println("robot stop engine");
   motors->brake();
 }

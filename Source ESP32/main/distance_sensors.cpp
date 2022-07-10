@@ -1,10 +1,8 @@
 #include "distance_sensors.h"
 
-#define SDA_1 21
-#define SCL_1 22
-#define SDA_2 27
-#define SCL_2 26
-
+//Sensor 1 - right facing Sensor (no loop on the sensor)
+//Sensor 2 - front facing Sensor (red loop on the sensor)
+  
 TwoWire I2Cone = TwoWire(0);
 TwoWire I2Ctwo = TwoWire(1);
 SFEVL53L1X distanceSensor1(I2Cone);
@@ -42,6 +40,7 @@ void setupDistanceSensors() {
 
 // Returns the distance from the sensor in mm
 int readDistanceFront() {
+  WebSerial.println("reading distance front");
   distanceSensor2.startRanging(); //Write configuration bytes to initiate measurement
   while (!distanceSensor2.checkForDataReady())
     delay(1);
@@ -53,11 +52,12 @@ int readDistanceFront() {
   Serial.print("Distance of sensor facing forward");
   Serial.print("(mm): ");
   Serial.println(distance);
-
+  WebSerial.println("done reading distance front");
   return distance;
 }
 
 int readDistanceRight() {
+  WebSerial.println("reading distance right");
   distanceSensor1.startRanging(); //Write configuration bytes to initiate measurement
   while (!distanceSensor1.checkForDataReady())
     delay(1);
@@ -69,6 +69,6 @@ int readDistanceRight() {
   Serial.print("Distance of sensor facing right");
   Serial.print("(mm): ");
   Serial.println(distance);
-
+  WebSerial.println("done reading distance right");
   return distance;
 }

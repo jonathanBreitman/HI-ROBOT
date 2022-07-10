@@ -3,6 +3,10 @@
 #include "distance_sensors.h"
 #include "charge_detect.h"
 
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <WebSerial.h>
+
 #include <Firebase_ESP_Client.h>
 //Provide the token generation process info.
 #include "addons/TokenHelper.h"
@@ -46,11 +50,11 @@ void FirebaseSetup() {
 
   /* Sign up */
   if (Firebase.signUp(&config, &auth, "", "")){
-    Serial.println("ok");
+    WebSerial.println("ok");
     signupOK = true;
   }
   else{
-    Serial.println("Error: sign up to Firebase");
+    WebSerial.println("Error: sign up to Firebase");
     //Serial.printf("%s\n", config.signer.signupError.message.c_str());
   }
 
@@ -72,8 +76,8 @@ void readRealTimeDB_ValueInt(const char *param_name, int *output) {
         *output = fbdo.to<int>(); 
       }
       else {
-        Serial.println("FAILED reading");
-        Serial.println("REASON: " + fbdo.errorReason());
+        WebSerial.println("FAILED reading");
+        WebSerial.println("REASON: " + fbdo.errorReason());
       }  
 }
 
@@ -88,8 +92,8 @@ void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
         *output = fbdo.to<bool>(); 
       }
       else {
-        Serial.println("FAILED reading");
-        Serial.println("REASON: " + fbdo.errorReason());
+        WebSerial.println("FAILED reading");
+        WebSerial.println("REASON: " + fbdo.errorReason());
       }  
 }
 
@@ -101,8 +105,8 @@ void updateRealTimeDB_ValueInt(const char *param_name, int value) {
     Serial.println("TYPE: " + fbdo.dataType());
   }
   else {
-    Serial.println("FAILED");
-    Serial.println("REASON: " + fbdo.errorReason());
+    WebSerial.println("FAILED READING INT");
+    WebSerial.println("REASON: " + fbdo.errorReason());
   }
 }
 //-----------------------------------------------------------------------------
@@ -126,32 +130,46 @@ void readMotorsDB_Commands() {
   }
 }
 //-----------------------------------------------------------------------------
+AsyncWebServer server(80);
+
+void recvMsg(uint8_t *data, size_t len){
+  WebSerial.println("Received Data...");
+  String d = "";
+  for(int i=0; i < len; i++){
+    d += char(data[i]);
+  }
+  WebSerial.println(d);
+}
+
 void setup() {
-  Serial.begin(115200); // Serial port for debugging purposes
   delay(5000);
+  Serial.begin(115200); // Serial port for debugging purposes
   time(&lastChargeTime);
   Serial.println("**STARTING ESP SETUP**");
+  // Connect to WiFi & setupWebSerial
+  connectToWiFi(); 
+  WebSerial.begin(&server);
+  WebSerial.msgCallback(recvMsg);
+  server.begin();
   // Setting up distance sensors
   setupDistanceSensors();
   //setup motors and charging sensor
   setupMotorPins();
   setupChargeDetection();
-  // Connect to WiFi
-  connectToWiFi(); 
   // Connect to Firebase 
   while(!signupOK)
     FirebaseSetup();   
   //set corner number  
   readRealTimeDB_ValueInt("corners_number", &cornerNumber); 
-  Serial.println("**FINISHED ESP SETUP**");
+  WebSerial.println("**FINISHED ESP SETUP**");
 }
 
 void loop() {
   stopEngine();
   if (Firebase.ready()) {
-    Serial.println("firebase is ready");
+    WebSerial.println("firebase is ready");
     lastState = robotMode;
-    Serial.println("read robot state");
+    WebSerial.println("read robot state");
     readMotorsDB_Commands();    
     if (robotMode == AUTONOMOUS && lastState == MANUAL)
       currCornerNumber = 0;         
@@ -159,7 +177,7 @@ void loop() {
       setMotorsValueByCommand(MANUAL_DRIVE_DELAY);
     }
     else if (robotMode == AUTONOMOUS) {      
-      Serial.println("entering autonomous movement");  
+      WebSerial.println("entering autonomous movement");  
       // Sample distance sensors
       int distanceRightSense = readDistanceRight(); //distance of sensor 1
       int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
@@ -176,16 +194,16 @@ void loop() {
       time(&currentTime);                                  // Sample current time
       if ((currentTime - startChargeTime)>CHARGING_TIME){  // Check if we done chargeing 
         lastChargeTime = currentTime;                      // Update last charge time             
-        Serial.println("Go Backward exit charging station");
+        WebSerial.println("Go Backward exit charging station");
         motors->drive(-1.0, -1.0, FORWARD_CHARGING_DELAY); 
-        // TODO: make 90 degree (plus a little bit forward) 
+        void turn_90_degree_left();
         updateRealTimeDB_ValueInt("state", AUTONOMOUS);
         robotMode = AUTONOMOUS;
       }
     }      
   }
   else {
-    Serial.println("Error: Firebase connection error");
+    WebSerial.println("Error: Firebase connection error");
     delay(NO_FIREBASE_DELAY); // The state sample delay
   }
 }

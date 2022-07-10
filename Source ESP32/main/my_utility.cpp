@@ -12,6 +12,7 @@ time_t currentTime;
 time_t startChargeTime;
 
 void connectToWiFi() {
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED){
