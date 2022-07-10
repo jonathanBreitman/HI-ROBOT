@@ -171,8 +171,9 @@ void loop() {
     lastState = robotMode;
     WebSerial.println("read robot state");
     readMotorsDB_Commands();    
-    if (robotMode == AUTONOMOUS && lastState == MANUAL)
-      currCornerNumber = 0;         
+    if (robotMode == AUTONOMOUS && lastState == MANUAL){
+      currCornerNumber = 0;
+    }         
     if (robotMode == MANUAL) {
       setMotorsValueByCommand(MANUAL_DRIVE_DELAY);
     }

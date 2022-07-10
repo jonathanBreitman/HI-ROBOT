@@ -64,9 +64,12 @@ void setMotorsValueByCommand(int delay_movement) {
 // Check if in corner, if so, check if this is the 0 corner, if so, check if we are after charging interaval 
 // and if so get into station and start timer. 
 // Return True if got into charging station, False otherwise.
-bool chargingHandle(int distanceFront) {           
-  if (distanceFront < MIN_DISTANCE_FRONT) {                   // We are in a corner
+bool chargingHandle(int distanceFront) {
+  WebSerial.println("charging handle enter");           
+  if (distanceFront < MIN_DISTANCE_FRONT) {// We are in a corner
+    WebSerial.print("entered a corner, number: ");
     currCornerNumber=(currCornerNumber+1)%cornerNumber;
+    WebSerial.println(currCornerNumber);
     if (!(currCornerNumber % cornerNumber)) {                 // We are in a 0 corner => we are in charging station 
       time(&currentTime);                                     // Sample current time
       if ((currentTime - lastChargeTime)>CHARGING_INTERVAL) { // It's time to charge! 
