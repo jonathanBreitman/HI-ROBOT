@@ -1,7 +1,6 @@
 #include "motors.h"
 #include "charge_detect.h"
 
-extern int robotMode;
 extern int cornerNumber;
 extern int currCornerNumber; //  0 - (corner_number-1)
 extern time_t lastChargeTime;
@@ -9,12 +8,6 @@ extern time_t currentTime;
 extern time_t startChargeTime;
 int charging_interval;
 extern int charging_forward_delay;
-
-int vSpeed = 255;   // Standard Speed can take a value between 0-255
-bool backward = false;
-bool right = false;
-bool left = false;
-bool forward = false;
 
 //motor A is the left side motor
 //red line is A1, black line is A2
@@ -29,10 +22,10 @@ void setupMotorPins() {
 }
 
 
-void setMotorsValueByCommand(int delay_movement) {
+void setMotorsValueByCommand(int delay_movement, int vSpeed, bool backward, bool right, bool left, bool forward) {
   float my_speed = (float)vSpeed / 255.0;
-  WebSerial.print("my speed: ");
-  WebSerial.println(my_speed);
+  //WebSerial.print("my speed: ");
+  //WebSerial.println(my_speed);
   if (forward && !left && !right){
     WebSerial.println("Go Forward");
     motors->drive(my_speed, my_speed, delay_movement);
@@ -46,7 +39,7 @@ void setMotorsValueByCommand(int delay_movement) {
     WebSerial.println("Go Backward");
     motors->drive(-my_speed, -my_speed, delay_movement);
   } else if (!forward && !backward && !left && !right){
-    WebSerial.println("Stopping");
+    //WebSerial.println("Stopping");
     motors->brake();
   } else if (forward && left && !backward && !right){
     WebSerial.println("forward and left");
@@ -66,7 +59,7 @@ void setMotorsValueByCommand(int delay_movement) {
 // Check if in corner, if so, check if this is the 0 corner, if so, check if we are after charging interaval 
 // and if so get into station and start timer. 
 // Return True if got into charging station, False otherwise.
-bool chargingHandle(int distanceFront) {
+bool chargingHandle(int distanceFront, int user_pressed_charge) {
   //WebSerial.println("charging handle enter");           
   if (distanceFront < MIN_DISTANCE_FRONT) {// We are in a corner
     WebSerial.print("entered a corner, number: ");
@@ -74,7 +67,7 @@ bool chargingHandle(int distanceFront) {
     WebSerial.println(currCornerNumber);
     if (currCornerNumber == 0) {                 // We are in a 0 corner => we are in charging station
       time(&currentTime);                                     // Sample current time
-      if ((currentTime - lastChargeTime)>charging_interval) { // It's time to charge!
+      if ((currentTime - lastChargeTime)>charging_interval || user_pressed_charge == 1) { // It's time to charge!
         return true;
       }
     }   
@@ -103,6 +96,12 @@ void turn_90_degree_left(){
   motors->drive(1.0, 1.0, CORNER_DELAY_FORWARD);
 }
 
+void turn_90_degree_right(){
+  WebSerial.println("Go Right (90 degree corner)");
+  motors->drive(1.0, -1.0, CORNER_DELAY);
+  motors->drive(1.0, 1.0, CORNER_DELAY_FORWARD);
+}
+
 void shake_to_charge(int iteration){
   if(iteration % 2 == 0){
     WebSerial.println("shaking right");
@@ -119,7 +118,7 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
   if (distance_front < MIN_DISTANCE_FRONT) {//We are close to a corner, turn left
     turn_90_degree_left();
   }
-  else if (distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
+  else if (MAX_MAX_DISTANCE_RIGHT > distance_right && distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
     WebSerial.println("Go Right");
     //turn to the right
     motors->drive(1.0, 0.0, WALL_DIST_CORRECTION_DELAY);
@@ -127,8 +126,9 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
     motors->drive(1.0, 1.0, RIGHT_CORRECTION_FORWARD);
     //turn left
     motors->drive(0.0, 1.0, WALL_DIST_CORRECTION_DELAY * 3/4);
-  }
-  else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
+  } else if(MAX_MAX_DISTANCE_RIGHT < distance_right){
+    turn_90_degree_right();
+  } else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
     WebSerial.println("Go Left");
     //turn to the left
     motors->drive(-1.0, 1.0, LEFT_CORRECTION);

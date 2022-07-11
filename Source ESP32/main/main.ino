@@ -26,6 +26,11 @@
 
 int lastState;
 extern int robotMode;
+int curr_robot_mode;
+static SemaphoreHandle_t mutex;
+static SemaphoreHandle_t mutex2;
+int user_charge;
+int curr_user_charge;
 extern int cornerNumber;
 extern int currCornerNumber; //  0 - (corner_number-1)
 //time_t rawtime aka long int (%ld) contains the number of seconds since 1970
@@ -37,6 +42,18 @@ extern Tb6612fng* motors;
 extern int charging_interval;
 extern int charging_forward_delay;
 extern int charging_time;
+
+int vSpeed = 255;   // Standard Speed can take a value between 0-255
+bool backward = false;
+bool right = false;
+bool left = false;
+bool forward = false;
+
+int tmp_speed;
+bool tmp_back;
+bool tmp_right;
+bool tmp_left;
+bool tmp_forward;
 
 // Firebase Data object
 FirebaseData fbdo;
@@ -79,8 +96,9 @@ void readRealTimeDB_ValueInt(const char *param_name, int *output) {
         *output = fbdo.to<int>(); 
       }
       else {
-        WebSerial.println("FAILED reading");
-        Serial.println("FAILED reading");
+        WebSerial.print("FAILED reading ");
+        WebSerial.println(param_name);
+        Serial.printf("FAILED reading %s", param_name);
         WebSerial.println("REASON: " + fbdo.errorReason());
         Serial.println("REASON: " + fbdo.errorReason());
       }  
@@ -98,7 +116,8 @@ void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
       }
       else {
         WebSerial.println("FAILED reading");
-        Serial.println("FAILED reading");
+        WebSerial.println(param_name);
+        Serial.printf("FAILED reading %s", param_name);
         WebSerial.println("REASON: " + fbdo.errorReason());
         Serial.println("REASON: " + fbdo.errorReason());
       }  
@@ -112,8 +131,9 @@ void updateRealTimeDB_ValueInt(const char *param_name, int value) {
     Serial.println("TYPE: " + fbdo.dataType());
   }
   else {
-    WebSerial.println("FAILED READING INT");
-    Serial.println("FAILED READING INT");
+    WebSerial.println("FAILED UPDATING INT");
+    WebSerial.println(param_name);
+    Serial.printf("FAILED updating %s", param_name);
     WebSerial.println("REASON: " + fbdo.errorReason());
     Serial.println("REASON: " + fbdo.errorReason());
   }
@@ -121,9 +141,6 @@ void updateRealTimeDB_ValueInt(const char *param_name, int value) {
 //-----------------------------------------------------------------------------
 //------------------------------Motors-----------------------------------------
 void readMotorsDB_Commands() {
-
-  readRealTimeDB_ValueInt("state", &robotMode);
-  if(robotMode == MANUAL) {
     readRealTimeDB_ValueInt("speed", &vSpeed);   
     
     readRealTimeDB_ValueBool("forward", &forward);
@@ -133,10 +150,6 @@ void readMotorsDB_Commands() {
     readRealTimeDB_ValueBool("left", &left);
     
     readRealTimeDB_ValueBool("right", &right);
-  }  
-  else{
-    vSpeed = 255;
-  }
 }
 //-----------------------------------------------------------------------------
 AsyncWebServer server(80);
@@ -148,6 +161,35 @@ void recvMsg(uint8_t *data, size_t len){
     d += char(data[i]);
   }
   WebSerial.println(d);
+}
+
+int tmp_robot_mode;
+int tmp_user_charge;
+
+void thread_read_state(void* param){
+  while(true){
+    if (Firebase.ready()){
+      xSemaphoreTake(mutex, portMAX_DELAY);
+      readRealTimeDB_ValueInt("state", &tmp_robot_mode);
+      readRealTimeDB_ValueInt("go_charge", &tmp_user_charge);
+      xSemaphoreGive(mutex);
+      if(tmp_robot_mode == MANUAL){
+        //Serial.println("taking mutex");
+        xSemaphoreTake(mutex, portMAX_DELAY);
+        readMotorsDB_Commands();
+        xSemaphoreGive(mutex);
+        //Serial.println("releasing mutex");
+      }
+    }
+    xSemaphoreTake(mutex2, portMAX_DELAY);
+    robotMode = tmp_robot_mode;
+    //Serial.printf("robot mode: %d\n", robotMode);
+    user_charge = tmp_user_charge;
+    xSemaphoreGive(mutex2);
+    if(tmp_robot_mode == AUTONOMOUS){
+      delay(1000);
+    }
+  }
 }
 
 void setup() {
@@ -173,47 +215,77 @@ void setup() {
   readRealTimeDB_ValueInt("charge_interval", &charging_interval);
   readRealTimeDB_ValueInt("charge_forward_delay", &charging_forward_delay);
   readRealTimeDB_ValueInt("charging_time", &charging_time);
+
+  TaskHandle_t xHandle = NULL;
+  mutex = xSemaphoreCreateMutex();
+  mutex2 = xSemaphoreCreateMutex();
+  xTaskCreate(thread_read_state, "rfirebase", 40000, NULL, tskIDLE_PRIORITY, &xHandle);
+  configASSERT(xHandle);
+  
   delay(5000);
   WebSerial.println("**FINISHED ESP SETUP**");
 }
 
 void loop() {
   stopEngine();
+  delay(50);
   if (Firebase.ready()) {
     //WebSerial.println("firebase is ready");
-    lastState = robotMode;
-    WebSerial.println("read robot state");
-    readMotorsDB_Commands();    
-    if (robotMode == AUTONOMOUS && lastState == MANUAL){
+    //Serial.println("taking mutex 2");
+    xSemaphoreTake(mutex2, portMAX_DELAY);
+    curr_robot_mode = robotMode;
+    curr_user_charge = user_charge;
+    xSemaphoreGive(mutex2);
+    //Serial.println("releasing mutex2");
+    if (curr_robot_mode == AUTONOMOUS && lastState == MANUAL){
       currCornerNumber = 0;
     }         
-    if (robotMode == MANUAL) {
-      setMotorsValueByCommand(MANUAL_DRIVE_DELAY);
+    if (curr_robot_mode == MANUAL) {
+      //Serial.println("trying to catch manual mutex");
+      xSemaphoreTake(mutex, portMAX_DELAY);
+      tmp_speed = vSpeed;
+      tmp_back = backward;
+      tmp_right = right;
+      tmp_left = left;
+      tmp_forward = forward;
+      xSemaphoreGive(mutex);
+      //Serial.println("did it");
+      setMotorsValueByCommand(MANUAL_DRIVE_DELAY, tmp_speed, tmp_back, tmp_right, tmp_left, tmp_forward);
     }
-    else if (robotMode == AUTONOMOUS) {      
+    else if (curr_robot_mode == AUTONOMOUS) {      
       //WebSerial.println("entering autonomous movement");  
       // Sample distance sensors
+      
       int distanceRightSense = readDistanceRight(); //distance of sensor 1
       int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
       // In case we in corner and needs to charge -> handle it.
-      if (chargingHandle(distanceFrontSense)) {
+      if (chargingHandle(distanceFrontSense, curr_user_charge)) {
+        //Serial.println("taking mutex before charging");
+        xSemaphoreTake(mutex, portMAX_DELAY);
+        updateRealTimeDB_ValueInt("go_charge", 0);
+        xSemaphoreGive(mutex);
         move_into_charging_position();
+        xSemaphoreTake(mutex, portMAX_DELAY);
         updateRealTimeDB_ValueInt("state", AUTONOMOUS_IN_CHARGE);
-        robotMode = AUTONOMOUS_IN_CHARGE;
+        xSemaphoreGive(mutex);
+        //Serial.println("releasing mutex after charging");
+        curr_robot_mode = AUTONOMOUS_IN_CHARGE;
       }              
-      if (robotMode != AUTONOMOUS_IN_CHARGE) { // Initinalize motors accordingly to the sensors (correction of movement according to the data)
+      if (curr_robot_mode != AUTONOMOUS_IN_CHARGE) { // Initinalize motors accordingly to the sensors (correction of movement according to the data)
         setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
       }       
     }
-    else if (robotMode == AUTONOMOUS_IN_CHARGE) {
+    else if (curr_robot_mode == AUTONOMOUS_IN_CHARGE) {
       time(&currentTime);                                  // Sample current time
       if ((currentTime - startChargeTime)>charging_time){  // Check if we done chargeing 
         lastChargeTime = currentTime;                      // Update last charge time             
         WebSerial.println("Go Backward exit charging station");
         motors->drive(-1.0, -1.0, charging_forward_delay); 
         void turn_90_degree_left();
+        xSemaphoreTake(mutex, portMAX_DELAY);
         updateRealTimeDB_ValueInt("state", AUTONOMOUS);
-        robotMode = AUTONOMOUS;
+        xSemaphoreGive(mutex);
+        curr_robot_mode = AUTONOMOUS;
       }
     }      
   }
@@ -221,4 +293,5 @@ void loop() {
     WebSerial.println("Error: Firebase connection error");
     delay(NO_FIREBASE_DELAY); // The state sample delay
   }
+  lastState = curr_robot_mode;
 }

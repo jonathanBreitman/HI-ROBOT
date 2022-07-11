@@ -5,6 +5,7 @@
 #define MIN_DISTANCE_FRONT 200
 #define MIN_DISTANCE_RIGHT 130
 #define MAX_DISTANCE_RIGHT 200
+#define MAX_MAX_DISTANCE_RIGHT 500
 
 #define CORNER_DELAY 500
 #define WALL_DIST_CORRECTION_DELAY 130
@@ -34,13 +35,14 @@ extern bool left;
 extern bool forward;
 
 void setupMotorPins();
-void setMotorsValueByCommand(int delay_movement);
+void setMotorsValueByCommand(int delay_movement, int vSpeed, bool backward, bool right, bool left, bool forward);
 void setMotorsValueBySensors(int distance_right, int distance_front);
 void stopEngine();
 
-bool chargingHandle(int distanceFront);
+bool chargingHandle(int distanceFront, int user_pressed_charge);
 void turn_90_degree_left();
 void shake_to_charge(int iteration);
 void move_into_charging_position();
+void turn_90_degree_right();
 
 #endif
