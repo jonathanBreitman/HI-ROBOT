@@ -48,7 +48,9 @@ class _ControlScreenState extends State<ControlScreen> {
             EditableSetting(settingDescription: "Number of room corners", fieldName: "corners_number",
               initVal: widget._fields.containsKey("corners_number")? widget._fields["corners_number"] as String : "0", db_ref: widget._db_ref,),
             EditableSetting(settingDescription: "Time interval between taking photos (minutes)", fieldName: "snap_interval",
-              initVal: widget._fields.containsKey("snap_interval") ? widget._fields["snap_interval"] as String : "0", db_ref: widget._db_ref,)
+              initVal: widget._fields.containsKey("snap_interval") ? widget._fields["snap_interval"] as String : "0", db_ref: widget._db_ref,),
+            EditableSetting(settingDescription: "time interval between charges (seconds)", fieldName: "charge_interval",
+              initVal: widget._fields.containsKey("snap_interval") ? widget._fields["charge_interval"] as String : "0", db_ref: widget._db_ref,),
           ],
         ),
       ),

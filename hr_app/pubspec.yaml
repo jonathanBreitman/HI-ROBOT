@@ -93,7 +93,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/images/room_irobot_pov.jpg
-    - assets/icons/
+  # - assets/icons/
     - images/
 
 fonts:

@@ -313,10 +313,15 @@ class _MyHomePageState extends State<MyHomePage> {
     final String cornersNum = cornerSnapshot.snapshot.value?.toString() ?? '4';
     fields.putIfAbsent("corners_number", () => cornersNum);
 
-    DatabaseReference intervalRef = FirebaseDatabase.instance.ref("wirelessCar/snap_interval");
-    final intervalSnapshot = await intervalRef.once(DatabaseEventType.value);
-    final String intervalTime = intervalSnapshot.snapshot.value?.toString() ?? '60';
-    fields.putIfAbsent("snap_interval", () => intervalTime);
+    DatabaseReference snapIntervalRef = FirebaseDatabase.instance.ref("wirelessCar/snap_interval");
+    final snapIntervalSnapshot = await snapIntervalRef.once(DatabaseEventType.value);
+    final String snapIntervalTime = snapIntervalSnapshot.snapshot.value?.toString() ?? '60';
+    fields.putIfAbsent("snap_interval", () => snapIntervalTime);
+
+    DatabaseReference chargeIntervalRef = FirebaseDatabase.instance.ref("wirelessCar/charge_interval");
+    final chargeIntervalSnapshot = await chargeIntervalRef.once(DatabaseEventType.value);
+    final String chargeIntervalTime = chargeIntervalSnapshot.snapshot.value?.toString() ?? '60';
+    fields.putIfAbsent("charge_interval", () => chargeIntervalTime);
 
     return fields;
   }
