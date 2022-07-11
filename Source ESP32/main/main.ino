@@ -34,6 +34,9 @@ extern time_t lastChargeTime;
 extern time_t currentTime;
 extern time_t startChargeTime;
 extern Tb6612fng* motors;
+extern int charging_interval;
+extern int charging_forward_delay;
+extern int charging_time;
 
 // Firebase Data object
 FirebaseData fbdo;
@@ -77,7 +80,9 @@ void readRealTimeDB_ValueInt(const char *param_name, int *output) {
       }
       else {
         WebSerial.println("FAILED reading");
+        Serial.println("FAILED reading");
         WebSerial.println("REASON: " + fbdo.errorReason());
+        Serial.println("REASON: " + fbdo.errorReason());
       }  
 }
 
@@ -93,7 +98,9 @@ void readRealTimeDB_ValueBool(const char *param_name, bool *output) {
       }
       else {
         WebSerial.println("FAILED reading");
+        Serial.println("FAILED reading");
         WebSerial.println("REASON: " + fbdo.errorReason());
+        Serial.println("REASON: " + fbdo.errorReason());
       }  
 }
 
@@ -106,7 +113,9 @@ void updateRealTimeDB_ValueInt(const char *param_name, int value) {
   }
   else {
     WebSerial.println("FAILED READING INT");
+    Serial.println("FAILED READING INT");
     WebSerial.println("REASON: " + fbdo.errorReason());
+    Serial.println("REASON: " + fbdo.errorReason());
   }
 }
 //-----------------------------------------------------------------------------
@@ -160,14 +169,18 @@ void setup() {
   while(!signupOK)
     FirebaseSetup();   
   //set corner number  
-  readRealTimeDB_ValueInt("corners_number", &cornerNumber); 
+  readRealTimeDB_ValueInt("corners_number", &cornerNumber);
+  readRealTimeDB_ValueInt("charge_interval", &charging_interval);
+  readRealTimeDB_ValueInt("charge_forward_delay", &charging_forward_delay);
+  readRealTimeDB_ValueInt("charging_time", &charging_time);
+  delay(5000);
   WebSerial.println("**FINISHED ESP SETUP**");
 }
 
 void loop() {
   stopEngine();
   if (Firebase.ready()) {
-    WebSerial.println("firebase is ready");
+    //WebSerial.println("firebase is ready");
     lastState = robotMode;
     WebSerial.println("read robot state");
     readMotorsDB_Commands();    
@@ -178,12 +191,13 @@ void loop() {
       setMotorsValueByCommand(MANUAL_DRIVE_DELAY);
     }
     else if (robotMode == AUTONOMOUS) {      
-      WebSerial.println("entering autonomous movement");  
+      //WebSerial.println("entering autonomous movement");  
       // Sample distance sensors
       int distanceRightSense = readDistanceRight(); //distance of sensor 1
       int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
       // In case we in corner and needs to charge -> handle it.
       if (chargingHandle(distanceFrontSense)) {
+        move_into_charging_position();
         updateRealTimeDB_ValueInt("state", AUTONOMOUS_IN_CHARGE);
         robotMode = AUTONOMOUS_IN_CHARGE;
       }              
@@ -193,10 +207,10 @@ void loop() {
     }
     else if (robotMode == AUTONOMOUS_IN_CHARGE) {
       time(&currentTime);                                  // Sample current time
-      if ((currentTime - startChargeTime)>CHARGING_TIME){  // Check if we done chargeing 
+      if ((currentTime - startChargeTime)>charging_time){  // Check if we done chargeing 
         lastChargeTime = currentTime;                      // Update last charge time             
         WebSerial.println("Go Backward exit charging station");
-        motors->drive(-1.0, -1.0, FORWARD_CHARGING_DELAY); 
+        motors->drive(-1.0, -1.0, charging_forward_delay); 
         void turn_90_degree_left();
         updateRealTimeDB_ValueInt("state", AUTONOMOUS);
         robotMode = AUTONOMOUS;

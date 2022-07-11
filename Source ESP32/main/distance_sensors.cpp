@@ -40,7 +40,7 @@ void setupDistanceSensors() {
 
 // Returns the distance from the sensor in mm
 int readDistanceFront() {
-  WebSerial.println("reading distance front");
+  //WebSerial.println("reading distance front");
   distanceSensor2.startRanging(); //Write configuration bytes to initiate measurement
   while (!distanceSensor2.checkForDataReady())
     delay(1);
@@ -52,12 +52,12 @@ int readDistanceFront() {
   Serial.print("Distance of sensor facing forward");
   Serial.print("(mm): ");
   Serial.println(distance);
-  WebSerial.println("done reading distance front");
+  //WebSerial.println("done reading distance front");
   return distance;
 }
 
 int readDistanceRight() {
-  WebSerial.println("reading distance right");
+  //WebSerial.println("reading distance right");
   distanceSensor1.startRanging(); //Write configuration bytes to initiate measurement
   while (!distanceSensor1.checkForDataReady())
     delay(1);
@@ -69,6 +69,6 @@ int readDistanceRight() {
   Serial.print("Distance of sensor facing right");
   Serial.print("(mm): ");
   Serial.println(distance);
-  WebSerial.println("done reading distance right");
+  //WebSerial.println("done reading distance right");
   return distance;
 }

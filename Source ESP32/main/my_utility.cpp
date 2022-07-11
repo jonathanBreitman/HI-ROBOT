@@ -10,6 +10,8 @@ int currCornerNumber = 0; //  0 - (corrner_number-1)
 time_t lastChargeTime;
 time_t currentTime;
 time_t startChargeTime;
+int charging_forward_delay;
+int charging_time;
 
 void connectToWiFi() {
   WiFi.mode(WIFI_STA);

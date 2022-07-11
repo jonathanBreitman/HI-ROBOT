@@ -7,6 +7,8 @@ extern int currCornerNumber; //  0 - (corner_number-1)
 extern time_t lastChargeTime;
 extern time_t currentTime;
 extern time_t startChargeTime;
+int charging_interval;
+extern int charging_forward_delay;
 
 int vSpeed = 255;   // Standard Speed can take a value between 0-255
 bool backward = false;
@@ -21,7 +23,7 @@ bool forward = false;
 Tb6612fng* motors;
 
 void setupMotorPins() {
-  WebSerial.println("starting motor setup pins");
+  //WebSerial.println("starting motor setup pins");
   motors = new Tb6612fng(STBY, AIN1, AIN2, PWMA, BIN1, BIN2, PWMB);
   motors->begin();
 }
@@ -65,31 +67,34 @@ void setMotorsValueByCommand(int delay_movement) {
 // and if so get into station and start timer. 
 // Return True if got into charging station, False otherwise.
 bool chargingHandle(int distanceFront) {
-  WebSerial.println("charging handle enter");           
+  //WebSerial.println("charging handle enter");           
   if (distanceFront < MIN_DISTANCE_FRONT) {// We are in a corner
     WebSerial.print("entered a corner, number: ");
     currCornerNumber=(currCornerNumber+1)%cornerNumber;
     WebSerial.println(currCornerNumber);
-    if (!(currCornerNumber % cornerNumber)) {                 // We are in a 0 corner => we are in charging station 
+    if (currCornerNumber == 0) {                 // We are in a 0 corner => we are in charging station
       time(&currentTime);                                     // Sample current time
-      if ((currentTime - lastChargeTime)>CHARGING_INTERVAL) { // It's time to charge! 
-        // TODO: get inside the charging station logic fine tuning   
-        WebSerial.println("Go Forward into charging station");
-        motors->drive(1.0, 1.0, FORWARD_CHARGING_DELAY); 
-        int i = 1;       
-        while(!isCharging()){
-          WebSerial.println("Error finding charging station, shaking");
-          shake_to_charge(i);
-          i += 1;
-          delay(100);
-        }  
-        WebSerial.println("Success - in charge");
-        time(&startChargeTime);                               // Start clock for charging 
+      if ((currentTime - lastChargeTime)>charging_interval) { // It's time to charge!
         return true;
-      }   
-    }    
+      }
+    }   
   }
-  return false;
+  return false;    
+}
+
+void move_into_charging_position(){
+    // TODO: get inside the charging station logic fine tuning   
+    WebSerial.println("Go Forward into charging station");
+    motors->drive(1.0, 1.0, charging_forward_delay); 
+    int i = 1;       
+    while(!isCharging()){
+      WebSerial.println("Error finding charging station, shaking");
+      shake_to_charge(i);
+      i += 1;
+      delay(1500);
+    }  
+    WebSerial.println("Success - in charge");
+    time(&startChargeTime);
 }
 
 void turn_90_degree_left(){
@@ -106,6 +111,8 @@ void shake_to_charge(int iteration){
     WebSerial.println("shaking left");
     motors->drive(-1.0, 1.0, SHAKE_DELAY*iteration);
   }
+  //drive forward a little
+  motors->drive(1.0, 1.0, FIX_FORWARD_CHARGING);
 }
 
 void setMotorsValueBySensors(int distance_right, int distance_front) {
@@ -137,6 +144,6 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
 }
 
 void stopEngine(){
-  WebSerial.println("robot stop engine");
+  //WebSerial.println("robot stop engine");
   motors->brake();
 }

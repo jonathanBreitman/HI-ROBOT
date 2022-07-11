@@ -8,12 +8,13 @@
 
 #define CORNER_DELAY 500
 #define WALL_DIST_CORRECTION_DELAY 130
-#define MOVE_FORWARD_DELAY 600
+#define MOVE_FORWARD_DELAY 500
 #define CORNER_DELAY_FORWARD 400
 #define RIGHT_CORRECTION_FORWARD 240
 #define LEFT_CORRECTION_FORWARD 120
 #define LEFT_CORRECTION 80
 #define SHAKE_DELAY 20
+#define FIX_FORWARD_CHARGING 100
 
 #include <TB6612FNG.h>
 #include <WebSerial.h>
@@ -40,5 +41,6 @@ void stopEngine();
 bool chargingHandle(int distanceFront);
 void turn_90_degree_left();
 void shake_to_charge(int iteration);
+void move_into_charging_position();
 
 #endif

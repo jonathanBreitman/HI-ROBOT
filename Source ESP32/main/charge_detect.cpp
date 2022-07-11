@@ -1,6 +1,5 @@
 #include "charge_detect.h"
 
-
 void setupChargeDetection(){
   pinMode(CHARGE_CONNECTION, INPUT);
 }
