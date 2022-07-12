@@ -138,6 +138,18 @@ void updateRealTimeDB_ValueInt(const char *param_name, int value) {
     Serial.println("REASON: " + fbdo.errorReason());
   }
 }
+
+void updateRealTimeDB_ValueString(const char *param_name, const char* value){
+  char start_str[150] = FILE_PATH;
+  if (Firebase.RTDB.setString(&fbdo, strcat(start_str, param_name), value)){
+    Serial.println("PASSED");
+//    Serial.println("PATH: " + fbdo.dataPath());
+//    Serial.println("TYPE: " + fbdo.dataType());
+  } else {
+    Serial.println("FAILED");
+    Serial.println("REASON: " + fbdo.errorReason());
+  }
+}
 //-----------------------------------------------------------------------------
 //------------------------------Motors-----------------------------------------
 void readMotorsDB_Commands() {
@@ -215,6 +227,7 @@ void setup() {
   readRealTimeDB_ValueInt("charge_interval", &charging_interval);
   readRealTimeDB_ValueInt("charge_forward_delay", &charging_forward_delay);
   readRealTimeDB_ValueInt("charging_time", &charging_time);
+  updateRealTimeDB_ValueString("esp32_ip", WiFi.localIP().toString().c_str());
 
   TaskHandle_t xHandle = NULL;
   mutex = xSemaphoreCreateMutex();
@@ -225,6 +238,8 @@ void setup() {
   delay(5000);
   WebSerial.println("**FINISHED ESP SETUP**");
 }
+
+bool need_to_charge;
 
 void loop() {
   stopEngine();
@@ -251,6 +266,12 @@ void loop() {
       xSemaphoreGive(mutex);
       //Serial.println("did it");
       setMotorsValueByCommand(MANUAL_DRIVE_DELAY, tmp_speed, tmp_back, tmp_right, tmp_left, tmp_forward);
+      need_to_charge = need_charging();
+      if(need_to_charge == true){
+        xSemaphoreTake(mutex, portMAX_DELAY);
+        updateRealTimeDB_ValueInt("low_battery", 1);
+        xSemaphoreGive(mutex);
+      }
     }
     else if (curr_robot_mode == AUTONOMOUS) {      
       //WebSerial.println("entering autonomous movement");  
@@ -259,7 +280,13 @@ void loop() {
       int distanceRightSense = readDistanceRight(); //distance of sensor 1
       int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
       // In case we in corner and needs to charge -> handle it.
-      if (chargingHandle(distanceFrontSense, curr_user_charge)) {
+      need_to_charge = need_charging();
+      if(need_to_charge == true){
+        xSemaphoreTake(mutex, portMAX_DELAY);
+        updateRealTimeDB_ValueInt("low_battery", 1);
+        xSemaphoreGive(mutex);
+      }
+      if (chargingHandle(distanceFrontSense, curr_user_charge, need_to_charge)) {
         //Serial.println("taking mutex before charging");
         xSemaphoreTake(mutex, portMAX_DELAY);
         updateRealTimeDB_ValueInt("go_charge", 0);

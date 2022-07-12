@@ -2,7 +2,7 @@
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
 
-#define VIN_PIN 35
+#define VIN_PIN 39
 #define WIFI_SSID "IOT"
 #define WIFI_PASSWORD "dreamy128"
 
@@ -43,9 +43,14 @@ void setup() {
   WebSerial.println("Finished Setup");
 }
 
+float read_voltage(){
+  float battery_read = (float)analogRead(VIN_PIN) / 4095.0;
+  return battery_read * 5.9;
+}
+
 void loop() {
-  Serial.printf("power read: %d\n", analogRead(VIN_PIN));
+  Serial.printf("power read: %f\n", read_voltage());
   WebSerial.print("power read: ");
-  WebSerial.println(analogRead(VIN_PIN));
+  WebSerial.println(read_voltage());
   delay(5000);
 }

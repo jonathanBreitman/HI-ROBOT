@@ -59,7 +59,7 @@ void setMotorsValueByCommand(int delay_movement, int vSpeed, bool backward, bool
 // Check if in corner, if so, check if this is the 0 corner, if so, check if we are after charging interaval 
 // and if so get into station and start timer. 
 // Return True if got into charging station, False otherwise.
-bool chargingHandle(int distanceFront, int user_pressed_charge) {
+bool chargingHandle(int distanceFront, int user_pressed_charge, bool battery_need_charging) {
   //WebSerial.println("charging handle enter");           
   if (distanceFront < MIN_DISTANCE_FRONT) {// We are in a corner
     WebSerial.print("entered a corner, number: ");
@@ -67,7 +67,7 @@ bool chargingHandle(int distanceFront, int user_pressed_charge) {
     WebSerial.println(currCornerNumber);
     if (currCornerNumber == 0) {                 // We are in a 0 corner => we are in charging station
       time(&currentTime);                                     // Sample current time
-      if ((currentTime - lastChargeTime)>charging_interval || user_pressed_charge == 1) { // It's time to charge!
+      if ((currentTime - lastChargeTime)>charging_interval || user_pressed_charge == 1 || battery_need_charging) { // It's time to charge!
         return true;
       }
     }   
@@ -79,12 +79,22 @@ void move_into_charging_position(){
     // TODO: get inside the charging station logic fine tuning   
     WebSerial.println("Go Forward into charging station");
     motors->drive(1.0, 1.0, charging_forward_delay); 
-    int i = 1;       
-    while(!isCharging()){
+    int i = 1;
+    bool notCharging = !isCharging();
+    delay(20);
+    notCharging = notCharging || !isCharging(); 
+    delay(20);
+    notCharging = notCharging || !isCharging(); 
+    while(notCharging){
       WebSerial.println("Error finding charging station, shaking");
       shake_to_charge(i);
       i += 1;
       delay(1500);
+      notCharging = !isCharging(); 
+      delay(20);
+      notCharging = notCharging || !isCharging();
+      delay(20);
+      notCharging = notCharging  || !isCharging(); 
     }  
     WebSerial.println("Success - in charge");
     time(&startChargeTime);
@@ -131,7 +141,7 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
   } else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
     WebSerial.println("Go Left");
     //turn to the left
-    motors->drive(-1.0, 1.0, LEFT_CORRECTION);
+    motors->drive(0.0, 1.0, LEFT_CORRECTION);
     //continue slightly forward
     motors->drive(1.0, 1.0, LEFT_CORRECTION_FORWARD);
     //turn right

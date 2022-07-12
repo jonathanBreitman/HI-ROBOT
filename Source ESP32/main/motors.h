@@ -8,12 +8,12 @@
 #define MAX_MAX_DISTANCE_RIGHT 500
 
 #define CORNER_DELAY 500
-#define WALL_DIST_CORRECTION_DELAY 130
+#define WALL_DIST_CORRECTION_DELAY 85
 #define MOVE_FORWARD_DELAY 500
 #define CORNER_DELAY_FORWARD 400
 #define RIGHT_CORRECTION_FORWARD 240
-#define LEFT_CORRECTION_FORWARD 120
-#define LEFT_CORRECTION 80
+#define LEFT_CORRECTION_FORWARD 140
+#define LEFT_CORRECTION 85
 #define SHAKE_DELAY 20
 #define FIX_FORWARD_CHARGING 100
 
@@ -39,7 +39,7 @@ void setMotorsValueByCommand(int delay_movement, int vSpeed, bool backward, bool
 void setMotorsValueBySensors(int distance_right, int distance_front);
 void stopEngine();
 
-bool chargingHandle(int distanceFront, int user_pressed_charge);
+bool chargingHandle(int distanceFront, int user_pressed_charge, bool battery_need_charging);
 void turn_90_degree_left();
 void shake_to_charge(int iteration);
 void move_into_charging_position();
