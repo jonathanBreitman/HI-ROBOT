@@ -24,9 +24,11 @@
 #define MANUAL_DRIVE_DELAY 300
 #define NO_FIREBASE_DELAY 150
 
+int charging_back_delay;
 int lastState;
 extern int robotMode;
 int curr_robot_mode;
+bool autonomous_in_charge;
 static SemaphoreHandle_t mutex;
 static SemaphoreHandle_t mutex2;
 int user_charge;
@@ -219,6 +221,7 @@ void setup() {
   //setup motors and charging sensor
   setupMotorPins();
   setupChargeDetection();
+  autonomous_in_charge = false;
   // Connect to Firebase 
   while(!signupOK)
     FirebaseSetup();   
@@ -226,6 +229,7 @@ void setup() {
   readRealTimeDB_ValueInt("corners_number", &cornerNumber);
   readRealTimeDB_ValueInt("charge_interval", &charging_interval);
   readRealTimeDB_ValueInt("charge_forward_delay", &charging_forward_delay);
+  readRealTimeDB_ValueInt("charge_back", &charging_back_delay);
   readRealTimeDB_ValueInt("charging_time", &charging_time);
   updateRealTimeDB_ValueString("esp32_ip", WiFi.localIP().toString().c_str());
 
@@ -274,50 +278,55 @@ void loop() {
         xSemaphoreGive(mutex);
       }
     }
-    else if (curr_robot_mode == AUTONOMOUS) {      
-      //WebSerial.println("entering autonomous movement");  
-      // Sample distance sensors
-      
-      int distanceRightSense = readDistanceRight(); //distance of sensor 1
-      int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
-      // In case we in corner and needs to charge -> handle it.
-      need_to_charge = need_charging();
-      if(need_to_charge == true){
-        xSemaphoreTake(mutex, portMAX_DELAY);
-        updateRealTimeDB_ValueInt("low_battery", 1);
-        xSemaphoreGive(mutex);
-      }
-      if (chargingHandle(distanceFrontSense, curr_user_charge, need_to_charge)) {
-        //Serial.println("taking mutex before charging");
-        xSemaphoreTake(mutex, portMAX_DELAY);
-        updateRealTimeDB_ValueInt("go_charge", 0);
-        xSemaphoreGive(mutex);
-        charge_succ = move_into_charging_position();
-        xSemaphoreTake(mutex, portMAX_DELAY);
-        updateRealTimeDB_ValueInt("state", AUTONOMOUS_IN_CHARGE);
-        if(!charge_succ){
-          updateRealTimeDB_ValueInt("error_charge", 1);
+    else if (curr_robot_mode == AUTONOMOUS) {
+      if (autonomous_in_charge == true) {
+        time(&currentTime);                                  // Sample current time
+        if ((currentTime - startChargeTime)>charging_time){  // Check if we done chargeing 
+          lastChargeTime = currentTime;                      // Update last charge time             
+          WebSerial.println("Go Backward exit charging station");
+          motors->drive(-1.0, -1.0, charging_back_delay); 
+          void turn_90_degree_left();
+          autonomous_in_charge = false;
+          xSemaphoreTake(mutex, portMAX_DELAY);
+          updateRealTimeDB_ValueInt("currently_charging", 0);
+          xSemaphoreGive(mutex);
         }
-        xSemaphoreGive(mutex);
-        //Serial.println("releasing mutex after charging");
-        curr_robot_mode = AUTONOMOUS_IN_CHARGE;
-      }              
-      if (curr_robot_mode != AUTONOMOUS_IN_CHARGE) { // Initinalize motors accordingly to the sensors (correction of movement according to the data)
-        setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
+      } else {
+        //WebSerial.println("entering autonomous movement");  
+        // Sample distance sensors
+        int distanceRightSense = readDistanceRight(); //distance of sensor 1
+        int distanceFrontSense = readDistanceFront(); //distance of sensor 2      
+        // In case we in corner and needs to charge -> handle it.
+        need_to_charge = need_charging();
+        if(need_to_charge == true){
+          xSemaphoreTake(mutex, portMAX_DELAY);
+          updateRealTimeDB_ValueInt("low_battery", 1);
+          xSemaphoreGive(mutex);
+        }
+        if (chargingHandle(distanceFrontSense, curr_user_charge, need_to_charge)) {
+          //Serial.println("taking mutex before charging");
+          xSemaphoreTake(mutex, portMAX_DELAY);
+          updateRealTimeDB_ValueInt("go_charge", 0);
+          xSemaphoreGive(mutex);
+          charge_succ = move_into_charging_position();
+          xSemaphoreTake(mutex, portMAX_DELAY);
+          if(!charge_succ){
+            updateRealTimeDB_ValueInt("error_charge", 1);
+          }
+          xSemaphoreGive(mutex);
+          if(!charge_succ){
+            delay(100000);
+          }
+          //Serial.println("releasing mutex after charging");
+          autonomous_in_charge = true;
+          xSemaphoreTake(mutex, portMAX_DELAY);
+          updateRealTimeDB_ValueInt("currently_charging", 1);
+          xSemaphoreGive(mutex);
+        }              
+        if (autonomous_in_charge == false) { // Initinalize motors accordingly to the sensors (correction of movement according to the data)
+          setMotorsValueBySensors(distanceRightSense, distanceFrontSense);
+        } 
       }       
-    }
-    else if (curr_robot_mode == AUTONOMOUS_IN_CHARGE) {
-      time(&currentTime);                                  // Sample current time
-      if ((currentTime - startChargeTime)>charging_time){  // Check if we done chargeing 
-        lastChargeTime = currentTime;                      // Update last charge time             
-        WebSerial.println("Go Backward exit charging station");
-        motors->drive(-1.0, -1.0, charging_forward_delay); 
-        void turn_90_degree_left();
-        xSemaphoreTake(mutex, portMAX_DELAY);
-        updateRealTimeDB_ValueInt("state", AUTONOMOUS);
-        xSemaphoreGive(mutex);
-        curr_robot_mode = AUTONOMOUS;
-      }
     }      
   }
   else {

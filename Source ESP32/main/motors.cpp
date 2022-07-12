@@ -137,21 +137,21 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
   else if (MAX_MAX_DISTANCE_RIGHT > distance_right && distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
     WebSerial.println("Go Right");
     //turn to the right
-    motors->drive(1.0, 0.0, WALL_DIST_CORRECTION_DELAY);
+    motors->drive(0.8, 0.0, WALL_DIST_CORRECTION_DELAY);
     //continue slightly forward
     motors->drive(1.0, 1.0, RIGHT_CORRECTION_FORWARD);
     //turn left
-    motors->drive(0.0, 1.0, WALL_DIST_CORRECTION_DELAY * 3/4);
+    motors->drive(0.0, 0.8, WALL_DIST_CORRECTION_DELAY * 3/4);
   } else if(MAX_MAX_DISTANCE_RIGHT < distance_right){
     turn_90_degree_right();
   } else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit
     WebSerial.println("Go Left");
     //turn to the left
-    motors->drive(0.0, 1.0, LEFT_CORRECTION);
+    motors->drive(0.0, 0.8, LEFT_CORRECTION);
     //continue slightly forward
     motors->drive(1.0, 1.0, LEFT_CORRECTION_FORWARD);
     //turn right
-    motors->drive(1.0, 0.0, LEFT_CORRECTION * 2/3);    
+    motors->drive(0.8, 0.0, LEFT_CORRECTION * 2/3);    
   }
   else {//If we got to this point, we are not in a corner and the robot is in an acceptable distance from the right wall, move forward
     WebSerial.println("Go Forward");
