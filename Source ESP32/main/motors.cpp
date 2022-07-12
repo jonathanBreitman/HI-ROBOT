@@ -75,7 +75,7 @@ bool chargingHandle(int distanceFront, int user_pressed_charge, bool battery_nee
   return false;    
 }
 
-void move_into_charging_position(){
+bool move_into_charging_position(){
     // TODO: get inside the charging station logic fine tuning   
     WebSerial.println("Go Forward into charging station");
     motors->drive(1.0, 1.0, charging_forward_delay); 
@@ -85,19 +85,25 @@ void move_into_charging_position(){
     notCharging = notCharging || !isCharging(); 
     delay(20);
     notCharging = notCharging || !isCharging(); 
-    while(notCharging){
+    while(notCharging && i <= 10){
       WebSerial.println("Error finding charging station, shaking");
       shake_to_charge(i);
       i += 1;
-      delay(1500);
+      delay(3000);
       notCharging = !isCharging(); 
       delay(20);
       notCharging = notCharging || !isCharging();
       delay(20);
       notCharging = notCharging  || !isCharging(); 
-    }  
-    WebSerial.println("Success - in charge");
+    }
+    if(i > 10){
+      WebSerial.println("Complete Fail");
+      return false;
+    } else {
+      WebSerial.println("Success - in charge"); 
+    }
     time(&startChargeTime);
+    return true;
 }
 
 void turn_90_degree_left(){

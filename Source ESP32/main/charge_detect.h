@@ -4,8 +4,8 @@
 #include <Arduino.h>
 #include <WebSerial.h>
 
-#define CHARGE_CONNECTION 39
-#define BATTERY_VOLTAGE_PIN 35
+#define CHARGE_CONNECTION 34
+#define BATTERY_VOLTAGE_PIN 39
 #define BATTERY_VOLTAGE_MIN 3.5
 #define MIN_CHARGE_READ_VAL 3000
 #define VOLTAGE_RANGE 7.5

@@ -240,6 +240,7 @@ void setup() {
 }
 
 bool need_to_charge;
+bool charge_succ;
 
 void loop() {
   stopEngine();
@@ -291,9 +292,12 @@ void loop() {
         xSemaphoreTake(mutex, portMAX_DELAY);
         updateRealTimeDB_ValueInt("go_charge", 0);
         xSemaphoreGive(mutex);
-        move_into_charging_position();
+        charge_succ = move_into_charging_position();
         xSemaphoreTake(mutex, portMAX_DELAY);
         updateRealTimeDB_ValueInt("state", AUTONOMOUS_IN_CHARGE);
+        if(!charge_succ){
+          updateRealTimeDB_ValueInt("error_charge", 1);
+        }
         xSemaphoreGive(mutex);
         //Serial.println("releasing mutex after charging");
         curr_robot_mode = AUTONOMOUS_IN_CHARGE;

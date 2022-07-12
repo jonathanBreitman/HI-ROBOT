@@ -42,7 +42,7 @@ void stopEngine();
 bool chargingHandle(int distanceFront, int user_pressed_charge, bool battery_need_charging);
 void turn_90_degree_left();
 void shake_to_charge(int iteration);
-void move_into_charging_position();
+bool move_into_charging_position();
 void turn_90_degree_right();
 
 #endif
