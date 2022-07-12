@@ -186,20 +186,16 @@ class ImageDetails {
 }
 
 class SavedFootagePage extends StatefulWidget {
-  const SavedFootagePage({Key? key}) : super(key: key);
-
+  final List<ImageDetails> _images;
+  const SavedFootagePage({Key? key, required List<ImageDetails> images}) : _images = images, super(key: key);
   @override
   _SavedFootagePageState createState() => _SavedFootagePageState();
 }
 
 class _SavedFootagePageState extends State<SavedFootagePage> {
-  List<ImageDetails> _images = List.generate(0, (index) => ImageDetails(imagePath: "", date: DateTime.now(), title: "", notes: ""));
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      getImages(context).then((value) => setState(() {_images = value;}));
-    });
   }
 
   @override
@@ -234,7 +230,7 @@ class _SavedFootagePageState extends State<SavedFootagePage> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: (_images.length > 0) ? GridView.builder(
+                child: (widget._images.length > 0) ? GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 10,
@@ -246,7 +242,7 @@ class _SavedFootagePageState extends State<SavedFootagePage> {
                       children: [
                         Container(
                           child: Text(
-                            getCleanDateStr(_images[index].date),
+                            getCleanDateStr(widget._images[index].date),
                             style: TextStyle(
                               fontSize: 14,
                             ),
@@ -260,10 +256,10 @@ class _SavedFootagePageState extends State<SavedFootagePage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetailsPage(
-                                    imagePath: _images[index].imagePath,
-                                    date: _images[index].date,
-                                    title: _images[index].title,
-                                    notes: _images[index].notes,
+                                    imagePath: widget._images[index].imagePath,
+                                    date: widget._images[index].date,
+                                    title: widget._images[index].title,
+                                    notes: widget._images[index].notes,
                                     index: index,
                                   ),
                                 ),
@@ -274,7 +270,7 @@ class _SavedFootagePageState extends State<SavedFootagePage> {
                               child: Container(
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12.0),
-                                    child: Image.network(_images[index].imagePath)
+                                    child: Image.network(widget._images[index].imagePath)
                                 ),
                               ),
                             ),
@@ -283,7 +279,7 @@ class _SavedFootagePageState extends State<SavedFootagePage> {
                       ],
                     );
                   },
-                  itemCount: _images.length,
+                  itemCount: widget._images.length,
                 ):
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,

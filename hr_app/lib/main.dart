@@ -263,17 +263,26 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: MediaQuery.of(context).size.height * 0.06,
                     width: MediaQuery.of(context).size.width * 0.6,
 
-                    child: ElevatedButton(onPressed: () {
+                    child: ElevatedButton(onPressed: () async {
                       if(!_appUser.isAuthenticated){
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
                       }
                       else {
                         if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                          FocusScopeNode currentFocus = FocusScope.of(context);
+                          if (!currentFocus.hasPrimaryFocus)
+                            currentFocus.unfocus();
+                          context.loaderOverlay.show();
+                          this.SwitchScreenTappabilty();
+                          List<ImageDetails> saved_images = await getImages(context);
+                          context.loaderOverlay.hide();
+                          this.SwitchScreenTappabilty();
+                          setState(() {});
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      SavedFootagePage())
+                                      SavedFootagePage(images: saved_images,))
                           );
                         }
                       else {

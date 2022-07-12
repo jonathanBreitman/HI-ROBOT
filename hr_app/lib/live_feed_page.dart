@@ -30,6 +30,8 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
   String _feed_url = "no_feed";//liveVideoUrl;
   Completer<WebViewController> _controller =
   Completer<WebViewController>();
+  bool batteryIsLow = false;
+
 
   @override
   void initState() {
@@ -37,7 +39,27 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
     if (Platform.isAndroid) {
       WebView.platform = SurfaceAndroidWebView();
     }
+    widget._db_ref
+        .child('low_battery')
+        .onValue.listen((event) {
+      var snapshot = event.snapshot;
 
+      int value = snapshot.value as int;
+      //if battery low bit was set in firebase and this is the first time it just happened - send message
+      if (value != 0 && !batteryIsLow){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Battery is low..."), duration: Duration(seconds: 2),),
+        );
+        setState(() {
+          batteryIsLow = true;
+        });
+      }
+      else if (value==0){ //if bit was set back to 0 (battery got charged) - save it
+        setState(() {
+          batteryIsLow = false;
+        });
+      }
+    });
     getUrlFromDB().then((result) {
       setFeedUrl(result);
     });
@@ -151,11 +173,27 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                 ),
               ),
               SizedBox(
-                height: _isManual? MediaQuery.of(context).size.height * 0.02 : MediaQuery.of(context).size.height * 0.12,
+                height: MediaQuery.of(context).size.height * 0.01,
+              ),
+              batteryIsLow?
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Icon(
+                          Icons.battery_alert_rounded
+                      )
+                    ]
+                ),
+              )
+                  :
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.03,
               ),
               Container(
-                height: _isManual? MediaQuery.of(context).size.height * 0.21 : 0,
-                width: _isManual? MediaQuery.of(context).size.width * 0.5 : 0,
+                height: MediaQuery.of(context).size.height * 0.21,
+                width: MediaQuery.of(context).size.width * 0.5,
                 child: _isManual? Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -220,7 +258,29 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                     ]
                 )
                     :
-                    null
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      ///take picture button
+                      IconButton(
+
+                        icon: Icon(Icons.battery_alert_rounded),
+                        onPressed: () async {
+                          this._dbRef.update({'go_charge': 1});
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('robot will go charge ASAP!'), duration: Duration(seconds: 2),));
+                        },
+                        iconSize: 70,
+                        color: batteryIsLow? Colors.red : Colors.black87,
+                        splashColor: Colors.green,
+                        splashRadius: 30,
+
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.03,
+                      ),
+                    ]
+                )
               ),
               Container(
                 height: MediaQuery.of(context).size.height * 0.12,
