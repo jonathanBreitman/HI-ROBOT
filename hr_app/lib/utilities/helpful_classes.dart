@@ -5,6 +5,7 @@ import 'package:hr_app/main.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_spinbox/flutter_spinbox.dart';
 
 
 
@@ -124,9 +125,11 @@ class _generalAppBarState extends State<generalAppBar> {
 class EditableSetting extends StatefulWidget {
   final String settingDescription;
   final String fieldName;
-  final String initVal;
+  final int initVal;
+  final int minVal;
+  final int maxVal;
   final DatabaseReference _db_ref;
-  const EditableSetting({Key? key, this.settingDescription="", this.fieldName="", this.initVal="", required DatabaseReference db_ref}) : _db_ref=db_ref, super(key: key);
+  const EditableSetting({Key? key, this.settingDescription="", this.fieldName="", this.initVal=1, this.minVal=1, this.maxVal=1000, required DatabaseReference db_ref}) : _db_ref=db_ref, super(key: key);
 
   @override
   _EditableSettingState createState() => _EditableSettingState();
@@ -135,7 +138,19 @@ class EditableSetting extends StatefulWidget {
 class _EditableSettingState extends State<EditableSetting> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
+      child: SpinBox(
+        spacing: 50,
+        min: widget.minVal.toDouble(),
+        max: widget.maxVal.toDouble(),
+        value: widget.initVal.toDouble(),
+        decoration: InputDecoration(labelText: widget.fieldName + " (" + widget.settingDescription + ")"),
+        keyboardType: TextInputType.number,
+        onChanged: (value) => widget._db_ref.update({widget.fieldName: value}),
+      ),
+      padding: const EdgeInsets.all(10),
+    );
+      /*Container(
 
       padding: const EdgeInsets.only(left: 10.0, right: 5.0),
       height: MediaQuery.of(context).size.height*0.08,
@@ -161,6 +176,6 @@ class _EditableSettingState extends State<EditableSetting> {
           ),
         ],
       ),
-    );
+    );*/
   }
 }
