@@ -7,6 +7,8 @@ import 'utilities/helpful_classes.dart';
 import 'utilities/Authentication.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_spinbox/flutter_spinbox.dart';
+
 
 class ControlScreen extends StatefulWidget {
   final DatabaseReference _db_ref;

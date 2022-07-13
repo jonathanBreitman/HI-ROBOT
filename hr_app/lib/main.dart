@@ -178,17 +178,26 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: MediaQuery.of(context).size.height * 0.08,
                     width: MediaQuery.of(context).size.width * 0.8,
 
-                    child: ElevatedButton(onPressed: () {
+                    child: ElevatedButton(onPressed: () async {
                       if(!_appUser.isAuthenticated){
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
                       }
                       else {
                         if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
+                          FocusScopeNode currentFocus = FocusScope.of(context);
+                          if (!currentFocus.hasPrimaryFocus)
+                            currentFocus.unfocus();
+                          context.loaderOverlay.show();
+                          this.SwitchScreenTappabilty();
+                          bool state = await getStateFromDB();
+                          context.loaderOverlay.hide();
+                          this.SwitchScreenTappabilty();
+                          setState(() {});
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      LiveFeedScreen(db_ref: this._dbref))
+                                      LiveFeedScreen(db_ref: this._dbref, initialState: state,))
                           );
                         }
                         else {
@@ -333,5 +342,12 @@ class _MyHomePageState extends State<MyHomePage> {
     fields.putIfAbsent("charge_interval", () => chargeIntervalTime);
 
     return fields;
+  }
+
+  Future<bool> getStateFromDB() async{
+    DatabaseReference stateRef = FirebaseDatabase.instance.ref("wirelessCar/state");
+    final stateSnapshot = await stateRef.once(DatabaseEventType.value);
+    final bool state = stateSnapshot.snapshot.value! as int != 0;
+    return state;
   }
 }

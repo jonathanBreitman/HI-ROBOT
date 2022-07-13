@@ -15,15 +15,16 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class LiveFeedScreen extends StatefulWidget {
   final DatabaseReference _db_ref;
-  const LiveFeedScreen({Key? key, required DatabaseReference db_ref}) : _db_ref=db_ref, super(key: key);
+  final bool _initialState;
+  const LiveFeedScreen({Key? key, required DatabaseReference db_ref, required bool initialState}) : _db_ref=db_ref, _initialState=initialState, super(key: key);
 
   @override
-  _LiveFeedScreenState createState() => _LiveFeedScreenState(dbRef: _db_ref);
+  _LiveFeedScreenState createState() => _LiveFeedScreenState(dbRef: _db_ref, isManual: !_initialState);
 }
 
 class _LiveFeedScreenState extends State<LiveFeedScreen> {
 
-  bool _isManual=false;
+  bool _isManual;
   JoyStickDirection _joystickDir=JoyStickDirection.NONE;
   JoyStickPower _joystickPower=JoyStickPower.NONE;
   DatabaseReference _dbRef;
@@ -31,6 +32,7 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
   Completer<WebViewController> _controller =
   Completer<WebViewController>();
   bool batteryIsLow = false;
+  bool _charging = false;
 
 
   @override
@@ -39,6 +41,10 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
     if (Platform.isAndroid) {
       WebView.platform = SurfaceAndroidWebView();
     }
+    getUrlFromDB().then((result) {
+      setFeedUrl(result);
+    });
+    //add low battery UI
     widget._db_ref
         .child('low_battery')
         .onValue.listen((event) {
@@ -60,8 +66,43 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
         });
       }
     });
-    getUrlFromDB().then((result) {
-      setFeedUrl(result);
+    //add charging UI
+    widget._db_ref
+        .child('currently_charging')
+        .onValue.listen((event) {
+      var snapshot = event.snapshot;
+
+      bool value = (snapshot.value as int) == 1;
+      print("got is charging value: " + value.toString());
+      //if battery low bit was set in firebase and this is the first time it just happened - send message
+      if (value && !_charging){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Charging..."), duration: Duration(seconds: 2),),
+        );
+        setState(() {
+          _charging = true;
+        });
+      }
+      else if(!value && _charging){
+        setState(() {
+          _charging = false;
+        });
+      }
+    });
+    //add failed charge UI
+    widget._db_ref
+        .child('charge_error')
+        .onValue.listen((event) {
+      var snapshot = event.snapshot;
+
+      int value = snapshot.value as int;
+      //if battery low bit was set in firebase and this is the first time it just happened - send message
+      if (value == 1){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed going into charging station"), duration: Duration(seconds: 3),),
+        );
+        widget._db_ref.update({'charge_error': 0});
+      }
     });
   }
 
@@ -77,7 +118,8 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
 
   }
 
-  _LiveFeedScreenState({required DatabaseReference dbRef}) : _dbRef = dbRef;
+
+  _LiveFeedScreenState({required DatabaseReference dbRef, required bool isManual}) : _dbRef = dbRef, _isManual=isManual;
 
   void setFeedUrl(String new_url){
     print("new url is $new_url");
@@ -175,14 +217,14 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.01,
               ),
-              batteryIsLow?
+              (_isManual && (batteryIsLow || _charging))?
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Icon(
-                          Icons.battery_alert_rounded
+                          !_charging? Icons.battery_alert_rounded : Icons.battery_charging_full_rounded
                       )
                     ]
                 ),
@@ -265,13 +307,13 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                       ///take picture button
                       IconButton(
 
-                        icon: Icon(Icons.battery_alert_rounded),
+                        icon: Icon(!_charging? Icons.battery_alert_rounded : Icons.battery_charging_full_rounded),
                         onPressed: () async {
                           this._dbRef.update({'go_charge': 1});
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('robot will go charge ASAP!'), duration: Duration(seconds: 2),));
                         },
                         iconSize: 70,
-                        color: batteryIsLow? Colors.red : Colors.black87,
+                        color: batteryIsLow? Colors.red[800] : Colors.black87,
                         splashColor: Colors.green,
                         splashRadius: 30,
 
