@@ -32,12 +32,50 @@ This project was created by [Itamar Juwiler](#contributors), [Roi Yona](#contrib
 
 ## The Robot Physic
 
+The robot has an On/Off button outside, for easy access as shown [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg).
+
+The robots physic is very tricycle like, with two wheels in the back, and a guiding rolling wheel in the front.\
+The robot has two distance sensors, as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/sensors_view.jpeg), one facing forward and the other one, facing right. These
+sensors are used for the autonomous movement, and docking accurately into the charging station.
+
+The charging device is based at the front of the robot, as shown [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/facing_forward.jpeg),
+so when the robot is charging, it will go to the charging station, and dock into it facing forward.
 
 
 ## Autonomous Movement Algorithm Explanation
-Using the sensors in their placement as defined earlier, the robot could advance in a straight line, while using the right facing sensor in order to ensure it maintains the same distance from the right wall at any time, and using the front facing sensor in order to detect whenever the robot is approaching a corner in order to make the appropriate turn.
+Using the sensors in their placement as defined earlier, the robot could advance in a straight line, while using the right facing sensor in order to ensure it maintains
+the same distance from the right wall at any time, and using the front facing sensor in order to detect whenever the robot is approaching a corner in order to make the appropriate turn.
 
-This algorithm is rather simple, but it makes sure the robot is walking in a perimeter around the requested area, and it is far more efficient then using four sensors and implementing a random-based movement algorithm.
+This algorithm is rather simple, but it makes sure the robot is walking in a perimeter around the requested area, and it is far more efficient then using four sensors and implementing a
+random-based movement algorithm.
+
+## Automated Charging Explanation
+
+The robot can be configured anytime with the number of corners in the room through the application.
+The robot will use that data, together with the data from the sensors, in order to detect when it's facing the corner containing the charging station.
+
+It will then dock into the charging station, if one of the following conditions is met:
+* The robot didn't charge in a long time.
+* The user requested the robot to charge.
+* The battery is low.
+
+After the robot is done charging, the application will notify the user, and the robot will continue moving.
+
+## The Application
+
+We will now explain the application different features.
+
+### Movement
+
+### Photos
+
+### Configurable parameters
+
+## Project Time Table
+
+| Week | Application | Hardware | Controller Code |
+| ---- | ----------- | -------- | --------------- |
+| | | | |
 
 ## Contributors
 
