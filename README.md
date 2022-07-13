@@ -30,6 +30,15 @@ This project was created by [Itamar Juwiler](#contributors), [Roi Yona](#contrib
 * Charging Rail.
 * On/Off button.
 
+## Used Libraries
+
+The external libraries used in the project are:
+* [WebSerial](https://randomnerdtutorials.com/esp32-webserial-library/)
+* [Sparkfun tb6612fng](https://github.com/sparkfun/SparkFun_TB6612FNG_Arduino_Library)
+* [SparkFun VL53L1X](https://github.com/sparkfun/SparkFun_VL53L1X_Arduino_Library)
+* [Firebase](https://github.com/mobizt/Firebase-ESP32)
+* [time.h](https://www.arduinolibraries.info/libraries/esp32-time)
+
 ## The Robot Physic
 
 The robot has an On/Off button outside, for easy access as shown [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg).
@@ -61,13 +70,21 @@ It will then dock into the charging station, if one of the following conditions 
 
 After the robot is done charging, the application will notify the user, and the robot will continue moving.
 
+
+## The Camera
+
+What differs our robot from a regular old I-Robot, is the camera.
+The camera is able to send live footage constantly to the application, and it takes pictures when one of these conditions are met:
+* The user requested a picture be taken.
+* The allotted time interval (changeable through the application), has passed.
+
 ## The Application
 
 We will now explain the application different features.
 
-### Movement
+### Movement & Control
 
-### Photos
+### Photos & Live Feed
 
 ### Configurable parameters
 
@@ -75,8 +92,20 @@ We will now explain the application different features.
 
 | Week | Application | Hardware | Controller Code |
 | ---- | ----------- | -------- | --------------- |
-| | | | |
+| 3 | - | Acquiring distance sensors  | Writing basic examples and tests for controlling distance sensors |
+| 4 | - | Acquiring Dc motors & controller | Writing basic examples and tests for the Dc motors |
+| 5 | Application Design (UI), creating application user scheme, and connecting application to firebase | - | Adding firebase connection code to the controller |
+| 6 | Work on the application, adding functionality of basic remote car control | - | - |
+| 7 | Application work, adding manual control module | Battery & Engine testing | Manual control and state reading from firebase code |
+| 8 | - | Connecting Dc motors, Esp32, and distance sensors | Designing the Autonomous movement algorithm & Testing |
+| 9 + 10 | Writing application module for receiving and displaying live video & footage | AI Thinker Esp32 Cam, learning usages & **building robot** | Creating Esp32-cam basic code that transmits live footage to a desired ip address, and uploads footage to the cloud |
+| 11 | Adding charging functionality into the app (user required charging) | Building charging station and railway | Docking in the charging station code |
+| 12 | - | Polishing rail and connection to the docking station | Docking in charging station code fixing and tinkering  |
+| 13 | - | Building the final robot build | code bug-fixing |
+| 14 | - | - | Move the firebase reading & updating into a separate thread in the esp32, in order to improve functionality, and add WebSerial connections in order to improve debugging capabilities |
+| 15 | Adding more configurable parameters to the application | examining the robot build | Added more configurable parameters reading from firebase & bug-fixing |
 
+In Week 16 (right before the presentation), we filmed the video requested for the submission, and prepared for the final submission.
 ## Contributors
 
 * [Itamar Juwiler](https://github.com/itamar1208)
