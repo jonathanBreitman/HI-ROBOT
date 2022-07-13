@@ -201,7 +201,7 @@ void thread_read_state(void* param){
     user_charge = tmp_user_charge;
     xSemaphoreGive(mutex2);
     if(tmp_robot_mode == AUTONOMOUS){
-      delay(1000);
+      delay(3000);
     }
   }
 }
