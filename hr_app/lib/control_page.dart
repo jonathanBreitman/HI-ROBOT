@@ -46,11 +46,11 @@ class _ControlScreenState extends State<ControlScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
 
-            EditableSetting(settingDescription: "Number of room corners", fieldName: "corners number",
+            EditableSetting(settingDescription: "Number of room corners", fieldName: "corners_number",
               initVal: widget._fields.containsKey("corners_number")? int.parse(widget._fields["corners_number"] as String) : 1, minVal: 1, maxVal: 10, db_ref: widget._db_ref,),
-            EditableSetting(settingDescription: "Time interval between taking photos (minutes)", fieldName: "snap interval",
+            EditableSetting(settingDescription: "Time interval between taking photos (minutes)", fieldName: "snap_interval",
               initVal: widget._fields.containsKey("snap_interval") ? int.parse(widget._fields["snap_interval"] as String) : 60, minVal: 1, maxVal: 1000, db_ref: widget._db_ref,),
-            EditableSetting(settingDescription: "time interval between charges (seconds)", fieldName: "charge interval",
+            EditableSetting(settingDescription: "time interval between charges (seconds)", fieldName: "charge_interval",
               initVal: widget._fields.containsKey("charge_interval") ? int.parse(widget._fields["charge_interval"] as String) : 7200, minVal: 1800, maxVal: 18000, db_ref: widget._db_ref,),
           ],
         ),

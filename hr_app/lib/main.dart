@@ -190,6 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context.loaderOverlay.show();
                           this.SwitchScreenTappabilty();
                           bool state = await getStateFromDB();
+                          String feed_url = await getUrlFromDB();
                           context.loaderOverlay.hide();
                           this.SwitchScreenTappabilty();
                           setState(() {});
@@ -197,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      LiveFeedScreen(db_ref: this._dbref, initialState: state,))
+                                      LiveFeedScreen(db_ref: this._dbref, initialState: state, feed_url: feed_url,))
                           );
                         }
                         else {
@@ -350,4 +351,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final bool state = stateSnapshot.snapshot.value! as int != 0;
     return state;
   }
+}
+
+Future<String> getUrlFromDB() async{
+  DatabaseReference urlRef = FirebaseDatabase.instance.ref("wirelessCar/feed_url");
+  final urlSnapshot = await urlRef.once(DatabaseEventType.value);
+  String url = urlSnapshot.snapshot.value?.toString() ?? 'no_feed';
+  print("got url: " + url);
+  if(!url.contains("http")){
+    url = "http://" + url;
+  }
+  return url;
+
 }

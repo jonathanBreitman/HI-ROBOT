@@ -16,7 +16,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 class LiveFeedScreen extends StatefulWidget {
   final DatabaseReference _db_ref;
   final bool _initialState;
-  const LiveFeedScreen({Key? key, required DatabaseReference db_ref, required bool initialState}) : _db_ref=db_ref, _initialState=initialState, super(key: key);
+  final String _feed_url;
+  const LiveFeedScreen({Key? key, required DatabaseReference db_ref, required bool initialState, required String feed_url}) : _db_ref=db_ref, _initialState=initialState, _feed_url=feed_url, super(key: key);
 
   @override
   _LiveFeedScreenState createState() => _LiveFeedScreenState(dbRef: _db_ref, isManual: !_initialState);
@@ -28,11 +29,11 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
   JoyStickDirection _joystickDir=JoyStickDirection.NONE;
   JoyStickPower _joystickPower=JoyStickPower.NONE;
   DatabaseReference _dbRef;
-  String _feed_url = "no_feed";//liveVideoUrl;
   Completer<WebViewController> _controller =
   Completer<WebViewController>();
   bool batteryIsLow = false;
   bool _charging = false;
+  late WebView _myWebView;
 
 
   @override
@@ -41,9 +42,6 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
     if (Platform.isAndroid) {
       WebView.platform = SurfaceAndroidWebView();
     }
-    getUrlFromDB().then((result) {
-      setFeedUrl(result);
-    });
     //add low battery UI
     widget._db_ref
         .child('low_battery')
@@ -66,6 +64,36 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
         });
       }
     });
+    _myWebView = WebView(
+      userAgent: "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0",
+      initialUrl: widget._feed_url,
+      javascriptMode: JavascriptMode.unrestricted,
+      onWebViewCreated: (WebViewController webViewController) {
+        _controller.complete(webViewController);
+      },
+      onProgress: (int progress) {
+        print('WebView is loading (progress : $progress%)');
+      },
+      javascriptChannels: <JavascriptChannel>{
+        _toasterJavascriptChannel(context),
+      },
+      navigationDelegate: (NavigationRequest request) {
+        if (request.url.startsWith('https://www.youtube.com/')) {
+          print('blocking navigation to $request}');
+          return NavigationDecision.prevent;
+        }
+        print('allowing navigation to $request');
+        return NavigationDecision.navigate;
+      },
+      onPageStarted: (String url) {
+        print('Page started loading: $url');
+      },
+      onPageFinished: (String url) {
+        print('Page finished loading: $url');
+      },
+      gestureNavigationEnabled: true,
+      backgroundColor: const Color(0x00000000),
+    );
     //add charging UI
     widget._db_ref
         .child('currently_charging')
@@ -106,28 +134,11 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
     });
   }
 
-  Future<String> getUrlFromDB() async{
-    DatabaseReference urlRef = FirebaseDatabase.instance.ref("wirelessCar/feed_url");
-    final urlSnapshot = await urlRef.once(DatabaseEventType.value);
-    final url = urlSnapshot.snapshot.value?.toString() ?? 'no_feed';
-    urlRef.onValue.listen((event) {
-      String? data = event.snapshot.value as String;
-      setFeedUrl(data);
-    });
-    return url;
 
-  }
 
 
   _LiveFeedScreenState({required DatabaseReference dbRef, required bool isManual}) : _dbRef = dbRef, _isManual=isManual;
 
-  void setFeedUrl(String new_url){
-    print("new url is $new_url");
-    setState(() {
-      _feed_url = new_url;
-      _controller.future.then((value) => value.loadUrl(new_url));
-    });
-  }
   void switchControlType(){
     setState(() {
       _isManual = !_isManual;
@@ -151,6 +162,7 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
@@ -173,36 +185,8 @@ class _LiveFeedScreenState extends State<LiveFeedScreen> {
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.45,
                   width: MediaQuery.of(context).size.width * 0.85,
-                  child: _feed_url != "no_feed"?
-                  WebView(
-                    initialUrl: this._feed_url,//'https://flutter.dev',
-                    javascriptMode: JavascriptMode.unrestricted,
-                    onWebViewCreated: (WebViewController webViewController) {
-                      _controller.complete(webViewController);
-                    },
-                    onProgress: (int progress) {
-                      print('WebView is loading (progress : $progress%)');
-                    },
-                    javascriptChannels: <JavascriptChannel>{
-                      _toasterJavascriptChannel(context),
-                    },
-                    navigationDelegate: (NavigationRequest request) {
-                      if (request.url.startsWith('https://www.youtube.com/')) {
-                        print('blocking navigation to $request}');
-                        return NavigationDecision.prevent;
-                      }
-                      print('allowing navigation to $request');
-                      return NavigationDecision.navigate;
-                    },
-                    onPageStarted: (String url) {
-                      print('Page started loading: $url');
-                    },
-                    onPageFinished: (String url) {
-                      print('Page finished loading: $url');
-                    },
-                    gestureNavigationEnabled: true,
-                    backgroundColor: const Color(0x00000000),
-                  ):
+                  child: widget._feed_url != "no_feed"?
+                  _myWebView:
                   Center(
                     child: Text('No feed available at the moment...',
                       style: TextStyle(fontSize: 18),
