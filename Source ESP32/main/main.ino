@@ -179,6 +179,7 @@ void recvMsg(uint8_t *data, size_t len){
 
 int tmp_robot_mode;
 int tmp_user_charge;
+const TickType_t xDelay = portTICK_PERIOD_MS;
 
 void thread_read_state(void* param){
   while(true){
@@ -201,12 +202,24 @@ void thread_read_state(void* param){
     user_charge = tmp_user_charge;
     xSemaphoreGive(mutex2);
     if(tmp_robot_mode == AUTONOMOUS){
-      delay(3000);
+      //delay(3000);
+      vTaskDelay(3000 / xDelay);
     }
   }
 }
 
+void havhav(){
+  pinMode(2, OUTPUT);
+  for(int i=0; i<4; i++){
+    delay(500);
+    digitalWrite(2,HIGH);
+    delay(500);
+    digitalWrite(2,LOW);
+  }
+}
+
 void setup() {
+  havhav();
   delay(5000);
   Serial.begin(115200); // Serial port for debugging purposes
   time(&lastChargeTime);
@@ -248,7 +261,7 @@ bool charge_succ;
 
 void loop() {
   stopEngine();
-  delay(50);
+  vTaskDelay(50 / xDelay);
   if (Firebase.ready()) {
     //WebSerial.println("firebase is ready");
     //Serial.println("taking mutex 2");
@@ -281,11 +294,11 @@ void loop() {
     else if (curr_robot_mode == AUTONOMOUS) {
       if (autonomous_in_charge == true) {
         time(&currentTime);                                  // Sample current time
-        if ((currentTime - startChargeTime)>charging_time){  // Check if we done chargeing 
+        if ((currentTime - startChargeTime) > charging_time){  // Check if we done chargeing 
           lastChargeTime = currentTime;                      // Update last charge time             
           WebSerial.println("Go Backward exit charging station");
           motors->drive(-1.0, -1.0, charging_back_delay); 
-          void turn_90_degree_left();
+          turn_90_degree_left();
           autonomous_in_charge = false;
           xSemaphoreTake(mutex, portMAX_DELAY);
           updateRealTimeDB_ValueInt("currently_charging", 0);
@@ -315,7 +328,7 @@ void loop() {
           }
           xSemaphoreGive(mutex);
           if(!charge_succ){
-            delay(100000);
+            vTaskDelay(1000000 / xDelay);
           }
           //Serial.println("releasing mutex after charging");
           autonomous_in_charge = true;
