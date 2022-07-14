@@ -66,7 +66,9 @@ The robot will use that data, together with the data from the sensors, in order 
 It will then dock into the charging station, if one of the following conditions is met:
 * The robot didn't charge in a long time.
 * The user requested the robot to charge.
-* The battery is low.
+* The battery is low (detected by cheking the battery's voltage).
+
+The robot gets a feed from the charging component, and will try to adjust his position as long as it has not started charging.
 
 After the robot is done charging, the application will notify the user, and the robot will continue moving.
 
@@ -83,22 +85,22 @@ The camera is able to send live footage constantly to the application, and it ta
 The application's purpose, is to grant the user access to the footage of the robot (both live feed and saved photos), and to control the robot's movement.
 The app's general structure is as follows:
 
-### The Main Screen (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg))
-This is the first screen the user gets when launching the app. If the user is logged in (and has a robot connected to his firebase account), he can access the other pages by pressing the button of his choosing (or log-out using the icon button in the app bar). However, if the user is not logged in, he can go to the sign in or sign up page using the icon button in the app bar.
+### The Main Screen (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/MainScreenLoggedIn.jpeg))
+This is the first screen the user gets when launching the app. If the user is logged in (and has a robot connected to his firebase account), he can access the other pages by pressing the button of his choosing (or log-out using the icon button in the app bar). However, if the user is not logged in (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/MainScreenNotLoggedIn.jpeg)), he can go to the sign in or sign up page using the icon button in the app bar.
 
 ### Live Feed Screen 
 This is the primary function of the app (hence, the largest button in the main screen). The screen is mostly filled with the live video that the robot's camera is broadcasting online, and at the bottom there is a button that changes the robot's movement state - Autonomous or Manual. the rest of the screen depends on the type of state we're in:
 
-  Autonomous (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg)) - the robot drives by itself. There is one  button that the user can press - the "go charge" button.
+  Autonomous (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/LiveFeedScreenAutonomous.jpeg)) - the robot drives by itself. There is one  button that the user can press - the "go charge" button.
   
-  Manual (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg)) - the robot drives by user instructions. There is a Joystick for controlling the movement direction and speed, and a "take picture" button.
+  Manual (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/LiveFeedScreenManual.jpeg)) - the robot drives by user instructions. There is a Joystick for controlling the movement direction and speed, and a "take picture" button.
   
 This screen also has some small UI changes and notifications to alert the user that the robot's battery is low, and when the robot is charging.
 
-### Control screen (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg))
+### Control screen (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/ControlScreen.jpeg))
 This screen has some settings that the user can edit in order to affect the robot's autonomous movement, such as charging time, interval between taking photos, defining the number of corners (90 degree left turns) in the room and more.
 
-### Saved Footage Screen (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/button_view.jpeg))
+### Saved Footage Screen (as seen [here](https://github.com/jonathanBreitman/HI-ROBOT/blob/main/Robot%20Pictures/SavedFootageScreen.jpeg))
 This screen shows the user all of the saved pictures that the robot has taken, with their corresponding date of creation.
 
 ## Project Time Table
