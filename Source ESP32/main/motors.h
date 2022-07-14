@@ -2,20 +2,20 @@
 #define MOTORS_H
 #include "my_utility.h"
 #include <Arduino.h>
-#define MIN_DISTANCE_FRONT 200
+#define MIN_DISTANCE_FRONT 150
 #define MIN_DISTANCE_RIGHT 130
 #define MAX_DISTANCE_RIGHT 200
 #define MAX_MAX_DISTANCE_RIGHT 500
 
 #define CORNER_DELAY 500
 #define WALL_DIST_CORRECTION_DELAY 85
-#define MOVE_FORWARD_DELAY 500
+#define MOVE_FORWARD_DELAY 280
 #define CORNER_DELAY_FORWARD 400
-#define RIGHT_CORRECTION_FORWARD 170
-#define LEFT_CORRECTION_FORWARD 140
-#define LEFT_CORRECTION 85
+#define RIGHT_CORRECTION_FORWARD 150
+#define LEFT_CORRECTION_FORWARD 160
+#define LEFT_CORRECTION 100
 #define SHAKE_DELAY 20
-#define FIX_FORWARD_CHARGING 100
+#define FIX_FORWARD_CHARGING 80
 
 #include <TB6612FNG.h>
 #include <WebSerial.h>
@@ -43,6 +43,7 @@ bool chargingHandle(int distanceFront, int user_pressed_charge, bool battery_nee
 void turn_90_degree_left();
 void shake_to_charge(int iteration);
 bool move_into_charging_position();
+bool move_into_charging_position_once();
 void turn_90_degree_right();
 
 #endif
