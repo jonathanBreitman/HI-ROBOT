@@ -150,9 +150,12 @@ void shake_to_charge(int iteration){
 
 void setMotorsValueBySensors(int distance_right, int distance_front) {
   if (distance_front < MIN_DISTANCE_FRONT) {//We are close to a corner, turn left
-    WebSerial.println("Corner");
     turn_90_degree_left();
     delay(1500);
+    WebSerial.println("Corner front: ");
+    WebSerial.print(readDistanceFront());
+    WebSerial.print(" right: ");
+    WebSerial.println(readDistanceRight());
   }
   else if (MAX_MAX_DISTANCE_RIGHT > distance_right && distance_right > MAX_DISTANCE_RIGHT) {//We are far from the wall, change the direction right a little bit
     WebSerial.println("Go Right");
@@ -163,6 +166,7 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
     //turn left
     motors->drive(0.0, 0.6, WALL_DIST_CORRECTION_DELAY * 6/7);
   } else if(MAX_MAX_DISTANCE_RIGHT < distance_right){
+    motors->drive(1.0, 1.0, 200);
     turn_90_degree_right();
     motors->drive(1.0, 1.0, 1500);
   } else if (distance_right < MIN_DISTANCE_RIGHT) {//We are too close to the wall, change the direction left a little bit

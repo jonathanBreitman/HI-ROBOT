@@ -12,27 +12,27 @@ void setupChargeDetection(){
 }
 
 bool isCharging(){
-  WebSerial.print("charge_connection: ");
-  WebSerial.println(analogRead(CHARGE_CONNECTION));
+  //WebSerial.print("charge_connection: ");
+  //WebSerial.println(analogRead(CHARGE_CONNECTION));
   return (analogRead(CHARGE_CONNECTION) > MIN_CHARGE_READ_VAL);
 }
 
 bool need_charging(){
-  WebSerial.println("starting charging check");
+  //WebSerial.println("starting charging check");
   float v_read = get_voltage(BATTERY_VOLTAGE_PIN);
-  WebSerial.println("Sampled charge: " + String(v_read, 3) + "V");
+  //WebSerial.println("Sampled charge: " + String(v_read, 3) + "V");
   battery_samples[sample_index] = v_read;
   sample_index = (sample_index + 1) % BATTERY_SAMPLE_SIZE;
   int count = 0;
   float sum = 0;
-  WebSerial.println("calculating avg");
+  //WebSerial.println("calculating avg");
   for(int i=0; i < BATTERY_SAMPLE_SIZE; i++){
     if(battery_samples[i] != 0.0){
       count++;
       sum += battery_samples[i];
     }
   }
-  WebSerial.println("done calculating avg");
+  //WebSerial.println("done calculating avg");
   if(count == 0){
     return false;
   }
@@ -40,7 +40,7 @@ bool need_charging(){
     WebSerial.println("low battery");
     return true;
   }
-  WebSerial.println("the robot doesn't need charging");
+  //WebSerial.println("the robot doesn't need charging");
   return false;
 }
 

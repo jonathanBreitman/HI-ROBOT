@@ -49,9 +49,9 @@ int readDistanceFront() {
   distanceSensor2.clearInterrupt();
   distanceSensor2.stopRanging();
 
-  WebSerial.print("Distance of sensor facing forward");
-  WebSerial.print("(mm): ");
-  WebSerial.println(distance);
+  //WebSerial.print("Distance of sensor facing forward");
+  //WebSerial.print("(mm): ");
+  //WebSerial.println(distance);
   //WebSerial.println("done reading distance front");
   return distance;
 }
@@ -66,9 +66,9 @@ int readDistanceRight() {
   distanceSensor1.clearInterrupt();
   distanceSensor1.stopRanging();
 
-  WebSerial.print("Distance of sensor facing right");
-  WebSerial.print("(mm): ");
-  WebSerial.println(distance);
+  //WebSerial.print("Distance of sensor facing right");
+  //WebSerial.print("(mm): ");
+  //WebSerial.println(distance);
   //WebSerial.println("done reading distance right");
   return distance;
 }
