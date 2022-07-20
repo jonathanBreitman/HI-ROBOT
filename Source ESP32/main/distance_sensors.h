@@ -2,7 +2,7 @@
 #define DISTANCE_SENSORS_H
 
 #include <Arduino.h>
-#include <ComponentObject.h>
+//#include <ComponentObject.h>
 #include <RangeSensor.h>
 #include <SparkFun_VL53L1X.h>
 #include <vl53l1x_class.h>

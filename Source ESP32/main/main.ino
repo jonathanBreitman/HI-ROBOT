@@ -205,6 +205,7 @@ void thread_read_state(void* param){
       //delay(3000);
       vTaskDelay(3000 / xDelay);
     }
+    //vTaskDelay(50 / xDelay);
   }
 }
 
@@ -291,8 +292,7 @@ void loop() {
         updateRealTimeDB_ValueInt("low_battery", 1);
         xSemaphoreGive(mutex);
       }
-    } else {
-      if (curr_robot_mode == AUTONOMOUS) {
+    } else if (curr_robot_mode == AUTONOMOUS) {
         if (autonomous_in_charge == true) {
           time(&currentTime);                                  // Sample current time
           if ((currentTime - startChargeTime) > charging_time){  // Check if we done chargeing 
@@ -325,7 +325,7 @@ void loop() {
             charge_succ = move_into_charging_position();
             xSemaphoreTake(mutex, portMAX_DELAY);
             if(!charge_succ){
-              updateRealTimeDB_ValueInt("error_charge", 1);
+              updateRealTimeDB_ValueInt("charge_error", 1);
             }
             xSemaphoreGive(mutex);
             if(!charge_succ){
@@ -343,7 +343,7 @@ void loop() {
         }       
       }      
     }
-  } else {
+   else {
     WebSerial.println("Error: Firebase connection error");
     delay(NO_FIREBASE_DELAY); // The state sample delay
   }
