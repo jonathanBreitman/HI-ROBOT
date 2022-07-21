@@ -69,6 +69,10 @@ void FirebaseSetup() {
   config.api_key = API_KEY;
   /* Assign the RTDB URL (required) */
   config.database_url = DATABASE_URL;
+  /* Set Config Timeouts */
+  config.timeout.wifiReconnect = 5 * 1000;
+  config.timeout.socketConnection = 5 * 1000;
+  config.timeout.serverResponse = 5 * 1000; 
 
   /* Sign up */
   if (Firebase.signUp(&config, &auth, "", "")){
@@ -186,8 +190,12 @@ void thread_read_state(void* param){
     if (Firebase.ready()){
       xSemaphoreTake(mutex, portMAX_DELAY);
       readRealTimeDB_ValueInt("state", &tmp_robot_mode);
+      xSemaphoreGive(mutex);
+      vTaskDelay(300 / xDelay);
+      xSemaphoreTake(mutex, portMAX_DELAY);
       readRealTimeDB_ValueInt("go_charge", &tmp_user_charge);
       xSemaphoreGive(mutex);
+      vTaskDelay(300 / xDelay);
       if(tmp_robot_mode == MANUAL){
         //Serial.println("taking mutex");
         xSemaphoreTake(mutex, portMAX_DELAY);
