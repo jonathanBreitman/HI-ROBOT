@@ -125,16 +125,7 @@ class _SignupPageState extends State<SignupPage> {
                   padding: EdgeInsets.all(10),
                   child: Column(
                     children: <Widget>[
-                      Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 30),
-                          )),
+
                       Form(
                         key: _formKey,
                         child: Column(
@@ -160,7 +151,7 @@ class _SignupPageState extends State<SignupPage> {
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'username...',
-                                  hintStyle: TextStyle(color: Colors.white30),
+                                  labelStyle: TextStyle(color: Colors.white30),
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide:
                                     BorderSide(color: Colors.white30),
@@ -195,7 +186,7 @@ class _SignupPageState extends State<SignupPage> {
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'email...',
-                                  hintStyle: TextStyle(color: Colors.white30),
+                                  labelStyle: TextStyle(color: Colors.white30),
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide:
                                     BorderSide(color: Colors.white30),
@@ -235,7 +226,7 @@ class _SignupPageState extends State<SignupPage> {
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'password...',
-                                  hintStyle: TextStyle(color: Colors.white30),
+                                  labelStyle: TextStyle(color: Colors.white30),
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide:
                                     BorderSide(color: Colors.white30),
@@ -269,7 +260,7 @@ class _SignupPageState extends State<SignupPage> {
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'reenter password...',
-                                  hintStyle: TextStyle(color: Colors.white30),
+                                  labelStyle: TextStyle(color: Colors.white30),
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide:
                                     BorderSide(color: Colors.white30),
@@ -309,7 +300,7 @@ class _SignupPageState extends State<SignupPage> {
                                     setState(() {});
                                     print("showing loading sign");
                                     if (_formKey.currentState!.validate()) {
-                                      await Provider.of<AppUser>(context,
+                                      bool didSignup = await Provider.of<AppUser>(context,
                                           listen: false)
                                           .signUp(
                                           email: emailController.text,
@@ -317,21 +308,31 @@ class _SignupPageState extends State<SignupPage> {
                                           name: usernameController.text
                                           )
                                           .catchError((error) => print(error));
-                                      Provider.of<AppUser>(context,
-                                          listen: false)
-                                          .setStatus(AuthStatus.Authenticated);
+
                                       context.loaderOverlay.hide();
                                       this.SwitchScreenTappabilty();
                                       setState(() {});
-                                      Navigator.pushAndRemoveUntil<dynamic>(
-                                        context,
-                                        MaterialPageRoute<dynamic>(
-                                          builder: (BuildContext context) =>
-                                              MyHomePage(title: "HR - Main Menu"),
-                                        ),
-                                            (route) =>
-                                        false, //if you want to disable back feature set to false
-                                      );
+                                      if (didSignup) {
+                                        print("signed up successfully! going to main screen...");
+                                        Provider.of<AppUser>(context,
+                                            listen: false)
+                                            .setStatus(AuthStatus.Authenticated);
+                                        Navigator.pushAndRemoveUntil<dynamic>(
+                                          context,
+                                          MaterialPageRoute<dynamic>(
+                                            builder: (BuildContext context) =>
+                                                MyHomePage(title: "HI-ROBOT"),
+                                          ),
+                                              (route) =>
+                                          false, //if you want to disable back feature set to false
+                                        );
+                                      }
+                                      else{
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'An error occurred while signing up...')));
+                                      }
                                     } else {
                                       print("not validated sign up info");
                                       context.loaderOverlay.hide();

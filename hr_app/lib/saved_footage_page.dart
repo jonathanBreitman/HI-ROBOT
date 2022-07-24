@@ -11,6 +11,8 @@ import 'dart:collection';
 import 'package:tuple/tuple.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'utilities/lib.dart' as lib;
+
 
 
 
@@ -38,7 +40,7 @@ Future<SplayTreeMap<DateTime, Tuple2<String,String>>> getPicPaths(String fileNam
 
 
 Future<List<ImageDetails>> getImages(BuildContext context) async {
-  String email = Provider.of<AppUser>(context, listen: false).user!.email!;
+  String email = Provider.of<AppUser>(context, listen: false).auth.currentUser!.email!;
   String emailName = email.substring(0, email.indexOf("@"));
   String userImagesFileName = "robot_" + emailName + "_footage";
   SplayTreeMap<DateTime, Tuple2<String,String>> imageDatesAndNames = await getPicPaths(userImagesFileName);
@@ -59,118 +61,10 @@ Future<List<ImageDetails>> getImages(BuildContext context) async {
     image_details.add(ImageDetails(imagePath: value.item2, date: key, title: value.item1, notes: ""));
 
   });
+  image_details.sort((a, b) => b.date.compareTo(a.date));
   return image_details;
 }
 
-/*
-List<ImageDetails> _images = [
-  ImageDetails(
-    imagePath: 'images/pic1.jpeg',
-    date: DateTime(2021, 1, 15, 12, 52, 31),
-    title: 'Casual Look',
-    notes:
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil error aspernatur, sequi inventore eligendi vitae dolorem animi suscipit. Nobis, cumque.',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic6.jpg',
-    date: DateTime(2022, 5, 15, 12, 52, 31),
-    title: 'Help',
-    notes:
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil error aspernatur, sequi inventore eligendi vitae dolorem animi suscipit. Nobis, cumque.',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic1.jpeg',
-    date: DateTime(2021, 1, 15, 12, 52, 31),
-    title: 'Casual Look',
-    notes:
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil error aspernatur, sequi inventore eligendi vitae dolorem animi suscipit. Nobis, cumque.',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic6.jpg',
-    date: DateTime(2022, 5, 15, 12, 52, 31),
-    title: 'Help',
-    notes:
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil error aspernatur, sequi inventore eligendi vitae dolorem animi suscipit. Nobis, cumque.',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic1.jpeg',
-    date: DateTime(2021, 1, 15, 12, 52, 31),
-    title: 'Casual Look',
-    notes:
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil error aspernatur, sequi inventore eligendi vitae dolorem animi suscipit. Nobis, cumque.',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic6.jpg',
-    date: DateTime(2022, 5, 15, 12, 52, 31),
-    title: 'Help',
-    notes:
-    'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil error aspernatur, sequi inventore eligendi vitae dolorem animi suscipit. Nobis, cumque.',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-  ImageDetails(
-    imagePath: 'images/pic11.jpg',
-    date: DateTime(2022, 11, 15, 12, 52, 31),
-    title: 'New York',
-    notes:
-    'Steph!',
-  ),
-];
-*/
 
 class ImageDetails {
   final String imagePath;
@@ -205,91 +99,98 @@ class _SavedFootagePageState extends State<SavedFootagePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text("Saved Footage",
-          style: TextStyle(color: Colors.green.shade900),
+          style: TextStyle(color: Colors.white, fontStyle: FontStyle.normal),
         ),
 
       ),
       body:
-      SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            SizedBox(
-              height: 40,
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 30,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: (widget._images.length > 0) ? GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: MediaQuery.of(context).size.height * 0.01,
+      Container(
+        decoration: lib.gradientBG,
 
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              SizedBox(
+                height: 40,
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 30,
                   ),
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          child: Text(
-                            getCleanDateStr(widget._images[index].date),
-                            style: TextStyle(
-                              fontSize: 14,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
+                  child: (widget._images.length > 0) ? GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: MediaQuery.of(context).size.height * 0.01,
+
+                    ),
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Container(
+                            child: Text(
+                              getCleanDateStr(widget._images[index].date),
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.09,
-                          child: RawMaterialButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailsPage(
-                                    imagePath: widget._images[index].imagePath,
-                                    date: widget._images[index].date,
-                                    title: widget._images[index].title,
-                                    notes: widget._images[index].notes,
-                                    index: index,
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.09,
+                            child: RawMaterialButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailsPage(
+                                      imagePath: widget._images[index].imagePath,
+                                      date: widget._images[index].date,
+                                      title: widget._images[index].title,
+                                      notes: widget._images[index].notes,
+                                      index: index,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            child: Hero(
-                              tag: 'logo$index',
-                              child: Container(
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    child: Image.network(widget._images[index].imagePath)
+                                );
+                              },
+                              child: Hero(
+                                tag: 'logo$index',
+                                child: Container(
+                                  child: RotatedBox(
+                                    quarterTurns: 1,
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                        child: Image.network(widget._images[index].imagePath)
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                  itemCount: widget._images.length,
-                ):
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("no saved footage yet..."),
-                  ],
+                        ],
+                      );
+                    },
+                    itemCount: widget._images.length,
+                  ):
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("no saved footage yet..."),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

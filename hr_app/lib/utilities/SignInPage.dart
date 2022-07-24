@@ -98,7 +98,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                       children: <Widget>[
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.02),
-                        getTitle(),
+                        //getTitle(),
                         Form(
                           key: _formKey,
                           child: Column(
@@ -250,7 +250,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                       context,
                                       MaterialPageRoute<dynamic>(
                                         builder: (BuildContext context) =>
-                                            MyHomePage(title: "HR - Main Menu"),
+                                            MyHomePage(title: "HI-ROBOT"),
                                       ),
                                           (route) =>
                                       false, //if you want to disable back feature set to false

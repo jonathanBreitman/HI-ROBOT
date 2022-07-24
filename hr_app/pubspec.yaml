@@ -47,6 +47,7 @@ dependencies:
   webview_flutter: ^3.0.4
   tuple: ^2.0.0
   flutter_spinbox: ^0.9.0
+  google_fonts: ^3.0.1
 
 
 dev_dependencies:
@@ -96,6 +97,7 @@ flutter:
     - assets/images/room_irobot_pov.jpg
   # - assets/icons/
     - images/
+    - assets/google_fonts/
 
 fonts:
   - family: MyFlutterApp

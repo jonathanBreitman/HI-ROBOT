@@ -27,9 +27,12 @@ class DetailsPage extends StatelessWidget {
                 child: Hero(
                   tag: 'logo$index',
                   child: Container(
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: Image.network(imagePath)
+                    child: RotatedBox(
+                      quarterTurns: 1,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5.0),
+                          child: Image.network(imagePath)
+                      ),
                     ),
                   ),
                 ),

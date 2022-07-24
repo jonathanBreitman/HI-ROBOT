@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 
 
 enum JoyStickDirection{
@@ -117,7 +117,9 @@ class _generalAppBarState extends State<generalAppBar> {
           },
         )
       ],
-      title: Text(widget.title, style: TextStyle(color: Colors.white)),
+      title: Text(widget.title,
+          style: TextStyle(color: Colors.white, fontStyle: FontStyle.normal)
+      ),
     );
   }
 }
@@ -140,11 +142,23 @@ class _EditableSettingState extends State<EditableSetting> {
   Widget build(BuildContext context) {
     return Padding(
       child: SpinBox(
+        iconColor: MaterialStateProperty.all<Color>(
+          Colors.white
+        ),
+        textStyle: TextStyle(color: Colors.white),
         spacing: 50,
         min: widget.minVal.toDouble(),
         max: widget.maxVal.toDouble(),
         value: widget.initVal.toDouble(),
-        decoration: InputDecoration(labelText: widget.fieldName + " (" + widget.settingDescription + ")"),
+        decoration: InputDecoration(labelText: widget.settingDescription,
+            fillColor: Colors.white,
+            labelStyle: TextStyle(color: Colors.white),
+            border: OutlineInputBorder(),
+            enabledBorder: const OutlineInputBorder(
+              // width: 0.0 produces a thin "hairline" border
+              borderSide: const BorderSide(color: Colors.white, width: 1.5),
+            ),
+        ),
         keyboardType: TextInputType.number,
         onChanged: (value) => widget._db_ref.update({widget.fieldName: value}),
       ),
