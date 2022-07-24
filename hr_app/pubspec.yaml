@@ -99,8 +99,8 @@ flutter:
     - images/
     - assets/google_fonts/
 
-fonts:
-  - family: MyFlutterApp
-    fonts:
-      - asset: fonts/MyFlutterApp.ttf
+  fonts:
+    - family: MyFlutterApp
+      fonts:
+        - asset: fonts/MyFlutterApp.ttf
 

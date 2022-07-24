@@ -239,7 +239,7 @@ class _SignupPageState extends State<SignupPage> {
                                     borderSide:
                                     BorderSide(color: Colors.white30),
                                   ),
-                                  //suffixIcon: getEyeIcon(true),
+                                  suffixIcon: getEyeIcon(true),
 
                                 ),
                               ),
@@ -273,7 +273,7 @@ class _SignupPageState extends State<SignupPage> {
                                     borderSide:
                                     BorderSide(color: Colors.white30),
                                   ),
-                                  //suffixIcon: getEyeIcon(false),
+                                  suffixIcon: getEyeIcon(false),
                                 ),
                               ),
                             ),

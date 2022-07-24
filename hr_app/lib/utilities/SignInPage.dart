@@ -181,7 +181,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                       borderSide:
                                       BorderSide(color: Colors.white30),
                                     ),
-                                    //suffixIcon: getEyeIcon(true),
+                                    suffixIcon: getEyeIcon(true),
                                   ),
                                 ),
                               ),
