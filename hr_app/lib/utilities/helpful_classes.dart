@@ -89,10 +89,11 @@ class _generalAppBarState extends State<generalAppBar> {
       leading: Container(
         child: IconButton(
           onPressed: (){
-            Navigator.of(context).pop();
             FocusScopeNode currentFocus = FocusScope.of(context);
             if (!currentFocus.hasPrimaryFocus)
               currentFocus.unfocus();
+            Navigator.of(context).pop();
+
           },
           icon: Icon(Icons.arrow_back, color: Colors.white),
         ),
@@ -104,6 +105,9 @@ class _generalAppBarState extends State<generalAppBar> {
             color: Colors.white,
           ),
           onPressed: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus)
+              currentFocus.unfocus();
             // GO TO HOME PAGE
             Navigator.pushAndRemoveUntil<dynamic>(
               context,

@@ -294,6 +294,9 @@ class _SignupPageState extends State<SignupPage> {
                                 child: TextButton(
                                   onPressed: () async {
                                     //sign up
+                                    FocusScopeNode currentFocus = FocusScope.of(context);
+                                    if (!currentFocus.hasPrimaryFocus)
+                                      currentFocus.unfocus();
                                     //first check that password was truly confirmed:
                                     context.loaderOverlay.show();
                                     this.SwitchScreenTappabilty();
