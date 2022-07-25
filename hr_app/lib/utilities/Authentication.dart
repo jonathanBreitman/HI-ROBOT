@@ -191,7 +191,8 @@ class AppUser with ChangeNotifier {
           .catchError((error) => {print(error.toString())});
       name = await dbUser.data()!['name'];
       print("found user name: " + name);
-      auth.currentUser!.updateDisplayName(name);
+      await auth.currentUser!.updateDisplayName(name);
+      print("display name: " + (auth.currentUser!.displayName ?? "not available"));
       return name;
     }
   }
