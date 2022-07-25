@@ -164,7 +164,7 @@ void setMotorsValueBySensors(int distance_right, int distance_front) {
     //continue slightly forward
     motors->drive(1.0, 1.0, RIGHT_CORRECTION_FORWARD);
     //turn left
-    motors->drive(0.0, 0.6, WALL_DIST_CORRECTION_DELAY * 6/7);
+    motors->drive(0.0, 0.6, WALL_DIST_CORRECTION_DELAY * 5/7);
   } else if(MAX_MAX_DISTANCE_RIGHT < distance_right){
     motors->drive(1.0, 1.0, 200);
     turn_90_degree_right();

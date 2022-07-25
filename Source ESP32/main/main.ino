@@ -70,9 +70,9 @@ void FirebaseSetup() {
   /* Assign the RTDB URL (required) */
   config.database_url = DATABASE_URL;
   /* Set Config Timeouts */
-  config.timeout.wifiReconnect = 5 * 1000;
-  config.timeout.socketConnection = 5 * 1000;
-  config.timeout.serverResponse = 5 * 1000; 
+  //config.timeout.wifiReconnect = 3 * 1000;
+  //config.timeout.socketConnection = 3 * 1000;
+  config.timeout.serverResponse = 3 * 1000; 
 
   /* Sign up */
   if (Firebase.signUp(&config, &auth, "", "")){
@@ -229,7 +229,7 @@ void havhav(){
 
 void setup() {
   havhav();
-  delay(5000);
+  //delay(5000);
   Serial.begin(115200); // Serial port for debugging purposes
   time(&lastChargeTime);
   Serial.println("**STARTING ESP SETUP**");
@@ -261,7 +261,7 @@ void setup() {
   xTaskCreate(thread_read_state, "rfirebase", 40000, NULL, tskIDLE_PRIORITY, &xHandle);
   configASSERT(xHandle);
   
-  delay(5000);
+  //delay(5000);
   WebSerial.println("**FINISHED ESP SETUP**");
 }
 

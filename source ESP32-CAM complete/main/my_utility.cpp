@@ -1,8 +1,11 @@
 #include "my_utility.h"
 
 // Network Credentials
-#define WIFI_SSID "IOT"
-#define WIFI_PASSWORD "dreamy128"
+//#define WIFI_SSID "IOT"
+//#define WIFI_PASSWORD "dreamy128"
+
+#define WIFI_SSID "ICST"
+#define WIFI_PASSWORD "arduino123"
 
 
 void connectToWiFi() {
