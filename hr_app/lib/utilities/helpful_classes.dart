@@ -5,7 +5,8 @@ import 'package:hr_app/main.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-
+import 'package:flutter_spinbox/flutter_spinbox.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 enum JoyStickDirection{
@@ -88,10 +89,11 @@ class _generalAppBarState extends State<generalAppBar> {
       leading: Container(
         child: IconButton(
           onPressed: (){
-            Navigator.of(context).pop();
             FocusScopeNode currentFocus = FocusScope.of(context);
             if (!currentFocus.hasPrimaryFocus)
               currentFocus.unfocus();
+            Navigator.of(context).pop();
+
           },
           icon: Icon(Icons.arrow_back, color: Colors.white),
         ),
@@ -103,6 +105,9 @@ class _generalAppBarState extends State<generalAppBar> {
             color: Colors.white,
           ),
           onPressed: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus)
+              currentFocus.unfocus();
             // GO TO HOME PAGE
             Navigator.pushAndRemoveUntil<dynamic>(
               context,
@@ -116,7 +121,9 @@ class _generalAppBarState extends State<generalAppBar> {
           },
         )
       ],
-      title: Text(widget.title, style: TextStyle(color: Colors.white)),
+      title: Text(widget.title,
+          style: TextStyle(color: Colors.white, fontStyle: FontStyle.normal)
+      ),
     );
   }
 }
@@ -124,9 +131,11 @@ class _generalAppBarState extends State<generalAppBar> {
 class EditableSetting extends StatefulWidget {
   final String settingDescription;
   final String fieldName;
-  final String initVal;
+  final int initVal;
+  final int minVal;
+  final int maxVal;
   final DatabaseReference _db_ref;
-  const EditableSetting({Key? key, this.settingDescription="", this.fieldName="", this.initVal="", required DatabaseReference db_ref}) : _db_ref=db_ref, super(key: key);
+  const EditableSetting({Key? key, this.settingDescription="", this.fieldName="", this.initVal=1, this.minVal=1, this.maxVal=1000, required DatabaseReference db_ref}) : _db_ref=db_ref, super(key: key);
 
   @override
   _EditableSettingState createState() => _EditableSettingState();
@@ -135,7 +144,31 @@ class EditableSetting extends StatefulWidget {
 class _EditableSettingState extends State<EditableSetting> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
+      child: SpinBox(
+        iconColor: MaterialStateProperty.all<Color>(
+          Colors.white
+        ),
+        textStyle: TextStyle(color: Colors.white),
+        spacing: 50,
+        min: widget.minVal.toDouble(),
+        max: widget.maxVal.toDouble(),
+        value: widget.initVal.toDouble(),
+        decoration: InputDecoration(labelText: widget.settingDescription,
+            fillColor: Colors.white,
+            labelStyle: TextStyle(color: Colors.white),
+            border: OutlineInputBorder(),
+            enabledBorder: const OutlineInputBorder(
+              // width: 0.0 produces a thin "hairline" border
+              borderSide: const BorderSide(color: Colors.white, width: 1.5),
+            ),
+        ),
+        keyboardType: TextInputType.number,
+        onChanged: (value) => widget._db_ref.update({widget.fieldName: value}),
+      ),
+      padding: const EdgeInsets.all(10),
+    );
+      /*Container(
 
       padding: const EdgeInsets.only(left: 10.0, right: 5.0),
       height: MediaQuery.of(context).size.height*0.08,
@@ -161,6 +194,6 @@ class _EditableSettingState extends State<EditableSetting> {
           ),
         ],
       ),
-    );
+    );*/
   }
 }

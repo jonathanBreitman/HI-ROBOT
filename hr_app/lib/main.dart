@@ -9,6 +9,9 @@ import 'utilities/SignInPage.dart';
 import 'utilities/Authentication.dart';
 import 'control_page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'utilities/lib.dart' as lib;
+
+
 
 
 Future<void> main() async {
@@ -21,31 +24,49 @@ Future<void> main() async {
 }
 
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget with lib.PortraitModeMixin {
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'HI-ROBOT Control',
-      theme: ThemeData(
-        // Define the default brightness and colors.
-        brightness: Brightness.light,
-        primaryColor: Colors.green[900],
-        backgroundColor: Colors.greenAccent[200],
-        // Define the default font family.
-        fontFamily: 'Georgia',
+    super.build(context);
+    return FutureBuilder(
+      future: _initialization,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Scaffold(
+              body: Center(
+                  child: Text(snapshot.error.toString(),
+                      textDirection: TextDirection.ltr)));
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'HI-ROBOT',
+            theme: ThemeData(
+              // Define the default brightness and colors.
+              brightness: Brightness.light,
+              primaryColor: Colors.green[900],
+              backgroundColor: Colors.greenAccent[200],
+              // Define the default font family.
+              fontFamily: 'Roboto',
 
-        // Define the default `TextTheme`. Use this to specify the default
-        // text styling for headlines, titles, bodies of text, and more.
-        textTheme: const TextTheme(
-          headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.green),
-          headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic, color: Colors.green),
-          bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
-        ),
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.green.shade200,
-      ),
-      home: MyHomePage(title: 'HR - Main Menu'),
+              // Define the default `TextTheme`. Use this to specify the default
+              // text styling for headlines, titles, bodies of text, and more.
+              textTheme: const TextTheme(
+                headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.green),
+                headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic, color: Colors.green),
+                bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+              ),
+              primarySwatch: Colors.green,
+              scaffoldBackgroundColor: Colors.green.shade200,
+            ),
+            home: MyHomePage(title: 'HI-ROBOT'),
+          );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }
@@ -116,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // Here we take the value from the MyHomePage object that was created by
               // the App.build method, and use it to set our appbar title.
               title: Text(widget.title,
-                style: TextStyle(color: Colors.green.shade900),
+                style: TextStyle(color: Colors.white, fontStyle: FontStyle.normal),
               ),
               actions: <Widget>[
                 IconButton(
@@ -141,163 +162,202 @@ class _MyHomePageState extends State<MyHomePage> {
                 )
               ],
             ),
-            body: Center(
-              // Center is a layout widget. It takes a single child and positions it
-              // in the middle of the parent.
-              child: Column(
-                // Column is also a layout widget. It takes a list of children and
-                // arranges them vertically. By default, it sizes itself to fit its
-                // children horizontally, and tries to be as tall as its parent.
-                //
-                // Invoke "debug painting" (press "p" in the console, choose the
-                // "Toggle Debug Paint" action from the Flutter Inspector in Android
-                // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-                // to see the wireframe for each widget.
-                //
-                // Column has various properties to control how it sizes itself and
-                // how it positions its children. Here we use mainAxisAlignment to
-                // center the children vertically; the main axis here is the vertical
-                // axis because Columns are vertical (the cross axis would be
-                // horizontal).
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  ///title text
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.12,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    alignment: Alignment.center,
-                    child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.user!.displayName! : "Welcome!",
-                      style: TextStyle(fontSize: 34),
+            body: Container(
+              decoration: lib.gradientBG,
+              child: Center(
+                // Center is a layout widget. It takes a single child and positions it
+                // in the middle of the parent.
+                child: Column(
+                  // Column is also a layout widget. It takes a list of children and
+                  // arranges them vertically. By default, it sizes itself to fit its
+                  // children horizontally, and tries to be as tall as its parent.
+                  //
+                  // Invoke "debug painting" (press "p" in the console, choose the
+                  // "Toggle Debug Paint" action from the Flutter Inspector in Android
+                  // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+                  // to see the wireframe for each widget.
+                  //
+                  // Column has various properties to control how it sizes itself and
+                  // how it positions its children. Here we use mainAxisAlignment to
+                  // center the children vertically; the main axis here is the vertical
+                  // axis because Columns are vertical (the cross axis would be
+                  // horizontal).
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    ///title text
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.12,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      alignment: Alignment.center,
+                      child: Text(_appUser.isAuthenticated? "Hello, " + _appUser.auth.currentUser!.displayName! : "Welcome!",
+                        style: TextStyle(fontSize: 34, color: Colors.white),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15,
-                  ),
-                  ///live video button
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.08,
-                    width: MediaQuery.of(context).size.width * 0.8,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                    ),
+                    ///live video button
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.08,
+                      width: MediaQuery.of(context).size.width * 0.8,
 
-                    child: ElevatedButton(onPressed: () {
-                      if(!_appUser.isAuthenticated){
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                      }
-                      else {
-                        if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      LiveFeedScreen(db_ref: this._dbref))
-                          );
+                      child: ElevatedButton(onPressed: () async {
+                        if(!_appUser.isAuthenticated){
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
                         }
                         else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(_appUser.user!.displayName! +
-                                  ' has no connected car...'),
-                                duration: Duration(seconds: 1),));
+                          if (_appUser.auth.currentUser!.email == 'jonathanbreitman@gmail.com') {
+                            FocusScopeNode currentFocus = FocusScope.of(context);
+                            if (!currentFocus.hasPrimaryFocus)
+                              currentFocus.unfocus();
+                            context.loaderOverlay.show();
+                            this.SwitchScreenTappabilty();
+                            bool state = await getStateFromDB();
+                            String feed_url = await getUrlFromDB();
+                            context.loaderOverlay.hide();
+                            this.SwitchScreenTappabilty();
+                            setState(() {});
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        LiveFeedScreen(db_ref: this._dbref, initialState: state, feed_url: feed_url,))
+                            );
+                          }
+                          else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(_appUser.auth.currentUser!.displayName! +
+                                    ' has no connected car...'),
+                                  duration: Duration(seconds: 1),));
+                          }
                         }
-                      }
-                    },
-                      child: Text(
-                          'Live Video!',
-                        style: TextStyle(fontSize: 30),
+                      },
+                        child: Text(
+                            'Live Video!',
+                          style: TextStyle(fontSize: 30),
+                          ),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              lib.btnColor),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ))),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.04,
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.06,
+                      width: MediaQuery.of(context).size.width * 0.6,
+
+                      child: ElevatedButton(onPressed: () async {
+                        if(!_appUser.isAuthenticated){
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
+                        }
+                        else {
+                          print("go to control page now, user: " + _appUser.auth.currentUser.toString());
+
+                          if (_appUser.auth.currentUser!.email == 'jonathanbreitman@gmail.com') {
+                            //fetch control data from firebase (and disable tappability while loading)
+                            FocusScopeNode currentFocus = FocusScope.of(context);
+                            if (!currentFocus.hasPrimaryFocus)
+                              currentFocus.unfocus();
+                            context.loaderOverlay.show();
+                            this.SwitchScreenTappabilty();
+                            Map<String, Object> dbFields = await getFieldsFromDB();
+                            context.loaderOverlay.hide();
+                            this.SwitchScreenTappabilty();
+                            setState(() {});
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ControlScreen(db_ref: this._dbref, fields: dbFields))
+                            );
+                          }
+                          else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(_appUser.auth.currentUser!.displayName! +
+                                    ' has no connected car...'),
+                                  duration: Duration(seconds: 1),));
+                          }
+                        }
+                      },
+                        child: Text(
+                          'Control',
+                          style: TextStyle(fontSize: 24),
                         ),
-                      style: ButtonStyle(
-
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                lib.btnColor),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ))),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.04,
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.06,
-                    width: MediaQuery.of(context).size.width * 0.6,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.03,
+                    ),
+                    ///saved data button
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.06,
+                      width: MediaQuery.of(context).size.width * 0.6,
 
-                    child: ElevatedButton(onPressed: () async {
-                      if(!_appUser.isAuthenticated){
+                      child: ElevatedButton(onPressed: () async {
+                        if(!_appUser.isAuthenticated){
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                      }
-                      else {
-                        if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
-                          //fetch control data from firebase (and disable tappability while loading)
-                          FocusScopeNode currentFocus = FocusScope.of(context);
-                          if (!currentFocus.hasPrimaryFocus)
-                            currentFocus.unfocus();
-                          context.loaderOverlay.show();
-                          this.SwitchScreenTappabilty();
-                          Map<String, Object> dbFields = await getFieldsFromDB();
-                          context.loaderOverlay.hide();
-                          this.SwitchScreenTappabilty();
-                          setState(() {});
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ControlScreen(db_ref: this._dbref, fields: dbFields))
-                          );
                         }
                         else {
+                          if (_appUser.auth.currentUser!.email == 'jonathanbreitman@gmail.com') {
+                            FocusScopeNode currentFocus = FocusScope.of(context);
+                            if (!currentFocus.hasPrimaryFocus)
+                              currentFocus.unfocus();
+                            context.loaderOverlay.show();
+                            this.SwitchScreenTappabilty();
+                            List<ImageDetails> saved_images = await getImages(context);
+                            context.loaderOverlay.hide();
+                            this.SwitchScreenTappabilty();
+                            setState(() {});
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        SavedFootagePage(images: saved_images,))
+                            );
+                          }
+                        else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(_appUser.user!.displayName! +
-                                  ' has no connected car...'),
-                                duration: Duration(seconds: 1),));
+                          SnackBar(content: Text(_appUser.auth.currentUser!.displayName! +
+                          ' has no connected car...'),
+                          duration: Duration(seconds: 1),));
+                          }
                         }
-                      }
-                    },
-                      child: Text(
-                        'Control',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      style: ButtonStyle(
-
+                      },
+                        child: Text(
+                          'Saved Footage',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                lib.btnColor),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ))),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.03,
-                  ),
-                  ///saved data button
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.06,
-                    width: MediaQuery.of(context).size.width * 0.6,
-
-                    child: ElevatedButton(onPressed: () {
-                      if(!_appUser.isAuthenticated){
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('you have to sign in first!'), duration: Duration(seconds: 1),));
-                      }
-                      else {
-                        if (_appUser.user!.email == 'jonathanbreitman@gmail.com') {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SavedFootagePage())
-                          );
-                        }
-                      else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(_appUser.user!.displayName! +
-                        ' has no connected car...'),
-                        duration: Duration(seconds: 1),));
-                        }
-                      }
-                    },
-                      child: Text(
-                        'Saved Footage',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      style: ButtonStyle(
-
-                      ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.03,
                     ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.03,
-                  ),
 
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -313,11 +373,40 @@ class _MyHomePageState extends State<MyHomePage> {
     final String cornersNum = cornerSnapshot.snapshot.value?.toString() ?? '4';
     fields.putIfAbsent("corners_number", () => cornersNum);
 
-    DatabaseReference intervalRef = FirebaseDatabase.instance.ref("wirelessCar/snap_interval");
-    final intervalSnapshot = await intervalRef.once(DatabaseEventType.value);
-    final String intervalTime = intervalSnapshot.snapshot.value?.toString() ?? '60';
-    fields.putIfAbsent("snap_interval", () => intervalTime);
+    DatabaseReference snapIntervalRef = FirebaseDatabase.instance.ref("wirelessCar/snap_interval");
+    final snapIntervalSnapshot = await snapIntervalRef.once(DatabaseEventType.value);
+    final String snapIntervalTime = snapIntervalSnapshot.snapshot.value?.toString() ?? '60';
+    fields.putIfAbsent("snap_interval", () => snapIntervalTime);
+
+    DatabaseReference chargeIntervalRef = FirebaseDatabase.instance.ref("wirelessCar/charge_interval");
+    final chargeIntervalSnapshot = await chargeIntervalRef.once(DatabaseEventType.value);
+    final String chargeIntervalTime = chargeIntervalSnapshot.snapshot.value?.toString() ?? '60';
+    fields.putIfAbsent("charge_interval", () => chargeIntervalTime);
+
+    DatabaseReference chargingTimeRef = FirebaseDatabase.instance.ref("wirelessCar/charging_time");
+    final chargingTimeSnapshot = await chargeIntervalRef.once(DatabaseEventType.value);
+    final String chargingTime = chargeIntervalSnapshot.snapshot.value?.toString() ?? '60';
+    fields.putIfAbsent("charging_time", () => chargingTime);
 
     return fields;
   }
+
+  Future<bool> getStateFromDB() async{
+    DatabaseReference stateRef = FirebaseDatabase.instance.ref("wirelessCar/state");
+    final stateSnapshot = await stateRef.once(DatabaseEventType.value);
+    final bool state = stateSnapshot.snapshot.value! as int != 0;
+    return state;
+  }
+}
+
+Future<String> getUrlFromDB() async{
+  DatabaseReference urlRef = FirebaseDatabase.instance.ref("wirelessCar/feed_url");
+  final urlSnapshot = await urlRef.once(DatabaseEventType.value);
+  String url = urlSnapshot.snapshot.value?.toString() ?? 'no_feed';
+  print("got url: " + url);
+  if(!url.contains("http")){
+    url = "http://" + url;
+  }
+  return url;
+
 }

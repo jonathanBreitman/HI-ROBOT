@@ -22,8 +22,7 @@ enum LoadingStatus {
 }
 
 class AppUser with ChangeNotifier {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  User? _user;
+  FirebaseAuth auth = FirebaseAuth.instance;
   AuthStatus _status = AuthStatus.Uninitialized;
   LoadingStatus loadingStatus = LoadingStatus.idle;
   String profilePickUrl =
@@ -32,8 +31,8 @@ class AppUser with ChangeNotifier {
   String name="";
 
   AppUser() {
-    _user = _auth.currentUser;
-    _onAuthStateChanged(_user);
+    auth = FirebaseAuth.instance;
+    _onAuthStateChanged(auth.currentUser);
 
   }
 
@@ -49,15 +48,14 @@ class AppUser with ChangeNotifier {
     notifyListeners();
   }
 
-  User? get user => _user;
 
   bool get isAuthenticated => _status == AuthStatus.Authenticated;
 
   Future<void> getPicUrl() async {
-    if(_user!= null) {
+    if(auth.currentUser!= null) {
       profilePickUrl = await firebase_storage.FirebaseStorage.instance
           .ref()
-          .child(_user!.uid)
+          .child(auth.currentUser!.uid)
           .getDownloadURL()
           .catchError((error) => profilePickUrl);
     }
@@ -67,38 +65,65 @@ class AppUser with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signUp(
+  Future<bool> signUp(
       {required String email, required String password, required String name}) async {
     print("started signup");
-    _auth = FirebaseAuth.instance;
+    auth = FirebaseAuth.instance;
     _status = AuthStatus.Authenticating;
     notifyListeners();
-    await _auth
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .catchError((error) =>
-        print(
-            "create user with email and password failed" + error.toString()));
-    print("created user");
-    _user = _auth.currentUser;
-    _user!.updateDisplayName(name);
-    Map<String, dynamic> data = {
-      'email': email,
-      'password': password,
-      'name': name
-    };
-    await FirebaseFirestore.instance
-        .collection(UsersStr)
-        .doc(_user!.uid)
-        .set(data)
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+    try {
+      await auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      auth = FirebaseAuth.instance;
+      print("created user");
+      auth.currentUser!.updateDisplayName(name);
+      Map<String, dynamic> data = {
+        'email': email,
+        'password': password,
+        'name': name
+      };
+      await FirebaseFirestore.instance
+          .collection(UsersStr)
+          .doc(auth.currentUser!.uid)
+          .set(data)
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
 
-    FirebaseDatabase.instance.ref('wirelessCar').set({'speed': 0, 'forward': false, 'backwards': false, 'left': false, 'right': false});
-    //FirebaseDatabase.instance.ref('dir_commands/' + _user!.uid).set({'power': 0, 'forward': false, 'back': false, 'left': false, 'right': false});
-    _status = AuthStatus.Authenticated;
-    this.name = name;
-    await getUsername();
-    notifyListeners();
+      FirebaseDatabase.instance.ref('wirelessCar').update({
+        'speed': 0,
+        'forward': false,
+        'backwards': false,
+        'left': false,
+        'right': false,
+        'charge_interval': 1,
+        'charge_error': 0,
+        'charge_forward_delay': 1000,
+        'charge_back': 800,
+        'charging_time': 20,
+        'corners_number': 4,
+        'currently_charging': 0,
+        'feed_url': "",
+        'go_charge': 0,
+        'low_battery': 0,
+        'snap_interval': 5,
+        'snap_pic': 0,
+        'state': 0,
+
+      });
+      _status = AuthStatus.Authenticated;
+      this.name = name;
+      await getUsername();
+      notifyListeners();
+      print("current user: " + auth.currentUser.toString());
+      return true;
+    }
+    catch(e){
+      _status = AuthStatus.Unauthenticated;
+      print("signup fail: ");
+      print(e);
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<bool> login({required String email, required String password}) async {
@@ -106,21 +131,21 @@ class AppUser with ChangeNotifier {
     try {
       _status = AuthStatus.Authenticating;
       notifyListeners();
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      _user = _auth.currentUser;
-      _user!.updateDisplayName(name);
+      await auth.signInWithEmailAndPassword(email: email, password: password);
+      auth = FirebaseAuth.instance;
+      auth.currentUser!.updateDisplayName(name);
       var dbUser = await FirebaseFirestore.instance
           .collection(UsersStr)
-          .doc(_auth.currentUser!.uid)
+          .doc(auth.currentUser!.uid)
           .get();
 
       _status = AuthStatus.Authenticated;
       await getUsername();
       notifyListeners();
+      print("current user: " + auth.currentUser.toString());
       return true;
     } catch (e) {
       _status = AuthStatus.Unauthenticated;
-      _user = null;
       print("login fail: ");
       print(e);
       notifyListeners();
@@ -133,11 +158,10 @@ class AppUser with ChangeNotifier {
     notifyListeners();
     var dbUser = await FirebaseFirestore.instance
         .collection(UsersStr)
-        .doc(_auth.currentUser!.uid)
+        .doc(auth.currentUser!.uid)
         .get();
-    await _auth.signOut();
+    await auth.signOut();
     _status = AuthStatus.Unauthenticated;
-    _user = null;
     profilePickUrl =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
@@ -148,53 +172,43 @@ class AppUser with ChangeNotifier {
 
   Future<void> _onAuthStateChanged(User? firebaseUser) async {
     if (firebaseUser == null) {
-      _user = null;
       _status = AuthStatus.Unauthenticated;
     } else {
-      _user = firebaseUser;
       _status = AuthStatus.Authenticated;
-      await getPicUrl();
+      //await getPicUrl();
     }
     notifyListeners();
   }
 
   Future<String> getUsername() async {
-    if (_user == null) {
+    if (auth.currentUser == null) {
       throw (Exception("ERROR, USER MUST BE ACCESSIBLE"));
     } else {
       var dbUser = await FirebaseFirestore.instance
           .collection(UsersStr)
-          .doc(_auth.currentUser!.uid)
+          .doc(auth.currentUser!.uid)
           .get()
           .catchError((error) => {print(error.toString())});
       name = await dbUser.data()!['name'];
-      _user!.updateDisplayName(name);
+      print("found user name: " + name);
+      await auth.currentUser!.updateDisplayName(name);
+      print("display name: " + (auth.currentUser!.displayName ?? "not available"));
       return name;
     }
   }
 
   Future<DocumentSnapshot> getUserInfo() async {
-    if (_user == null) {
+    if (auth.currentUser == null) {
       throw (Exception("ERROR, USER MUST BE ACCESSIBLE"));
     } else {
       return await FirebaseFirestore.instance
           .collection(UsersStr)
-          .doc(_auth.currentUser!.uid)
+          .doc(auth.currentUser!.uid)
           .get()
           .catchError((error) => {print(error.toString())});
     }
   }
 
-
-  /*
-  Future<DocumentSnapshot> getShowReqInfo(String showReqID) async {
-    return await FirebaseFirestore.instance
-        .collection(ShowRequestsStr)
-        .doc(showReqID)
-        .get()
-        .catchError((error) => {print(error.toString())});
-  }
-  */
 
 }
 

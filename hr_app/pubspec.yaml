@@ -46,6 +46,8 @@ dependencies:
   video_player: ^2.4.2
   webview_flutter: ^3.0.4
   tuple: ^2.0.0
+  flutter_spinbox: ^0.9.0
+  google_fonts: ^3.0.1
 
 
 dev_dependencies:
@@ -93,11 +95,12 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/images/room_irobot_pov.jpg
-    - assets/icons/
+  # - assets/icons/
     - images/
+    - assets/google_fonts/
 
-fonts:
-  - family: MyFlutterApp
-    fonts:
-      - asset: fonts/MyFlutterApp.ttf
+  fonts:
+    - family: MyFlutterApp
+      fonts:
+        - asset: fonts/MyFlutterApp.ttf
 

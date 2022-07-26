@@ -7,6 +7,9 @@ import 'utilities/helpful_classes.dart';
 import 'utilities/Authentication.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'utilities/lib.dart' as lib;
+
+
 
 class ControlScreen extends StatefulWidget {
   final DatabaseReference _db_ref;
@@ -34,22 +37,29 @@ class _ControlScreenState extends State<ControlScreen> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text("Autonomous Control",
-          style: TextStyle(color: Colors.green.shade900,
-          fontSize: 28),
+          style: TextStyle(color: Colors.white,
+          fontSize: 28, fontStyle: FontStyle.normal),
         ),
 
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
+      body: Container(
+        decoration: lib.gradientBG,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
 
-            EditableSetting(settingDescription: "Number of room corners", fieldName: "corners_number",
-              initVal: widget._fields.containsKey("corners_number")? widget._fields["corners_number"] as String : "0", db_ref: widget._db_ref,),
-            EditableSetting(settingDescription: "Time interval between taking photos (minutes)", fieldName: "snap_interval",
-              initVal: widget._fields.containsKey("snap_interval") ? widget._fields["snap_interval"] as String : "0", db_ref: widget._db_ref,)
-          ],
+              EditableSetting(settingDescription: "Number of room corners", fieldName: "corners_number",
+                initVal: widget._fields.containsKey("corners_number")? int.parse(widget._fields["corners_number"] as String) : 1, minVal: 1, maxVal: 10, db_ref: widget._db_ref,),
+              EditableSetting(settingDescription: "Time interval between taking photos (minutes)", fieldName: "snap_interval",
+                initVal: widget._fields.containsKey("snap_interval") ? int.parse(widget._fields["snap_interval"] as String) : 60, minVal: 1, maxVal: 1000, db_ref: widget._db_ref,),
+              EditableSetting(settingDescription: "time interval between charges (seconds)", fieldName: "charge_interval",
+                initVal: widget._fields.containsKey("charge_interval") ? int.parse(widget._fields["charge_interval"] as String) : 7200, minVal: 1, maxVal: 18000, db_ref: widget._db_ref,),
+              EditableSetting(settingDescription: "time in charging station (seconds)", fieldName: "charging_time",
+                initVal: widget._fields.containsKey("charging_time") ? int.parse(widget._fields["charging_time"] as String) : 7200, minVal: 1, maxVal: 18000, db_ref: widget._db_ref,),
+            ],
+          ),
         ),
       ),
     );

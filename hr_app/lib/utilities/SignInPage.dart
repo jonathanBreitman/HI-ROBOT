@@ -98,7 +98,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                       children: <Widget>[
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.02),
-                        getTitle(),
+                        //getTitle(),
                         Form(
                           key: _formKey,
                           child: Column(
@@ -181,7 +181,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                       borderSide:
                                       BorderSide(color: Colors.white30),
                                     ),
-                                    //suffixIcon: getEyeIcon(true),
+                                    suffixIcon: getEyeIcon(true),
                                   ),
                                 ),
                               ),
@@ -240,22 +240,25 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                       password: passwordController.text)
                                       .catchError((error) => print(error));
 
-                                  context.loaderOverlay.hide();
-                                  this.SwitchScreenTappabilty();
+
                                   setState(() {});
                                   if (didSignin) {
                                     Provider.of<AppUser>(context, listen: false)
                                         .setStatus(AuthStatus.Authenticated);
+                                    context.loaderOverlay.hide();
+                                    this.SwitchScreenTappabilty();
                                     Navigator.pushAndRemoveUntil<dynamic>(
                                       context,
                                       MaterialPageRoute<dynamic>(
                                         builder: (BuildContext context) =>
-                                            MyHomePage(title: "HR - Main Menu"),
+                                            MyHomePage(title: "HI-ROBOT"),
                                       ),
                                           (route) =>
                                       false, //if you want to disable back feature set to false
                                     );
                                   } else {
+                                    context.loaderOverlay.hide();
+                                    this.SwitchScreenTappabilty();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                             content: Text(
