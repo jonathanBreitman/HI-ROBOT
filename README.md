@@ -2,6 +2,10 @@
 
 A small security robot that can navigate around the house like an IROBOT, take pictures, provide live video feed, and has a self charging function.
 
+# Goal
+
+ Secure our house using simple, low maintenance tech solution.
+
 ## Backstory
 
 This repo is the product of the course [236333 - Project in IoT](https://moodle.technion.ac.il/course/view.php?id=5976), at the Technion university.
@@ -12,7 +16,7 @@ This project was created by [Itamar Juwiler](#contributors), [Roi Yona](#contrib
 * Move autonomously around a perimeter.
 * Move manually via controls used with a matching application.
 * Provide live-stream video to the application.
-* Take pictures on user request and every few minutes automatically, the pictures are then uploaded to the application.
+* Take pictures on user request and every few minutes automatically, the pictures are then uploaded to cloud, and and can be view via the application.
 * Recognize when there is low battery and dock into a charging point, exiting when fully charged or on user request.
 
 
