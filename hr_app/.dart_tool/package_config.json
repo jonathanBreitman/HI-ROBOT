@@ -74,6 +74,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "crypto",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/crypto-3.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "csslib",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/csslib-0.17.1",
       "packageUri": "lib/",
@@ -88,6 +94,18 @@
     {
       "name": "fake_async",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "ffi",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/ffi-1.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "file",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/file-6.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -176,6 +194,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_spinbox",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_spinbox-0.9.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -184,6 +208,12 @@
     {
       "name": "flutter_web_plugins",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "google_fonts",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/google_fonts-3.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -284,14 +314,74 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "path_provider",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-2.0.11",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "path_provider_android",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_android-2.0.14",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "path_provider_ios",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_ios-2.0.9",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "path_provider_linux",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.1.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "path_provider_macos",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_macos-2.0.6",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "path_provider_platform_interface",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_platform_interface-2.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "path_provider_windows",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-2.0.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "platform",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/platform-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "plugin_platform_interface",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-2.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
+      "name": "process",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/process-4.2.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "provider",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/provider-6.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "quiver",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/quiver-3.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -334,6 +424,12 @@
     {
       "name": "test_api",
       "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.4.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "tuple",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/tuple-2.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -404,13 +500,25 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "win32",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/win32-2.5.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
+      "name": "xdg_directories",
+      "rootUri": "file:///C:/Users/jonat/OneDrive/Documents/flutter/.pub-cache/hosted/pub.dartlang.org/xdg_directories-0.2.0+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "hr_app",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2022-06-15T11:18:39.410044Z",
+  "generated": "2022-07-28T06:42:49.583259Z",
   "generator": "pub",
   "generatorVersion": "2.16.2"
 }

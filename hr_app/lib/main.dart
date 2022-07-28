@@ -384,8 +384,8 @@ class _MyHomePageState extends State<MyHomePage> {
     fields.putIfAbsent("charge_interval", () => chargeIntervalTime);
 
     DatabaseReference chargingTimeRef = FirebaseDatabase.instance.ref("wirelessCar/charging_time");
-    final chargingTimeSnapshot = await chargeIntervalRef.once(DatabaseEventType.value);
-    final String chargingTime = chargeIntervalSnapshot.snapshot.value?.toString() ?? '60';
+    final chargingTimeSnapshot = await chargingTimeRef.once(DatabaseEventType.value);
+    final String chargingTime = chargingTimeSnapshot.snapshot.value?.toString() ?? '60';
     fields.putIfAbsent("charging_time", () => chargingTime);
 
     return fields;

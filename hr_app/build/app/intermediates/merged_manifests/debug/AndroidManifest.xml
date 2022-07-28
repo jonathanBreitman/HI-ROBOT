@@ -21,7 +21,8 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="hr_app" >
+        android:label="hr_app"
+        android:networkSecurityConfig="@xml/network_security_config" >
         <activity
             android:name="com.technion.iot.hirobot.hr_app.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
