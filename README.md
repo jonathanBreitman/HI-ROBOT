@@ -85,7 +85,7 @@ The camera is able to send live footage constantly to the application, and it ta
 * The allotted time interval (changeable through the application), has passed.
 
 ## The Application
-
+(if you want to check out the app the apk is available at hr_app\build\app\outputs\flutter-apk\app-release.apk)
 The application's purpose, is to grant the user access to the footage of the robot (both live feed and saved photos), and to control the robot's movement.
 The app's general structure is as follows:
 
